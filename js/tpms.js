@@ -35,8 +35,9 @@ var warnings = [
 // TBD: get from json
 var pressureSettings = {
 	normal: 2.00,
+    treshold: 25,
 	warnDiff: 0.3,
-	multiplier: 6, // can be modified to have the color change earlier or later to yellow/orange/red
+	multiplier: 1, // can be modified to have the color change earlier or later to yellow/orange/red
 	range: 0.5
 };
 var warnMin = pressureSettings.normal - pressureSettings.warnDiff;
@@ -127,9 +128,7 @@ $(document).ready(function() {
 		// write value
 		$('#'+pos+'Pressure').html(value.toString().replace(".",","));
 
-		var diff = calcOffset(value); // || 0;
-
-		var color =  perc2color(diff); // || "00ff00";
+		var color =  perc2color(value); // || "00ff00";
 		var height = pixelPosition(value); // || 28.5;
 		$('#'+pos+'Bar').css({'background': color, 'height': height+'px'});
 
@@ -225,31 +224,24 @@ function pixelPosition(value) {
 	var maxHeight = 57; // tire / bar height in px // TBD: Depending on car image <= CSS
 	return maxHeight - maxHeight * ( 0.5 - (( value - pressureSettings.normal ) / ( pressureSettings.range * 2 )));
 }
-function calcOffset(value) {
-    return diff = pressureSettings.normal === value ? 0 : pressureSettings.normal > value ? pressureSettings.normal - value : value - pressureSettings.normal, diff *= pressureSettings.multiplier, diff > 100 && (diff = 100), diff / pressureSettings.normal * 100;
-}
-    function calcOffset(value) {
-        var diff = Math.abs(pressureSettings.normal - value); // Calculate absolute difference
-        var offset = diff * pressureSettings.multiplier; // Apply multiplier
-        offset = Math.min(offset, 100); // Ensure offset does not exceed 100
-        return (offset / pressureSettings.normal) * 100; // Calculate percentage offset
-    }
 
-function perc2color(diff) {
+function perc2color(value) {
+    // calculate difference of sensor value to normal pressure
+    var diff = Math.abs(pressureSettings.normal - value); // Calculate absolute difference
+    // diff = diff * pressureSettings.multiplier; // Apply multiplier
+    diff = (diff / pressureSettings.normal) * 100;
+    diff = Math.min(diff * (100 / pressureSettings.treshold), 100); // Apply a multiplier depending on treshold
+    // color calculation green to yellow to red
     var n, e;
-    return diff < 50 ? (e = 255, n = Math.round(5.1 * diff)) : (n = 255, e = Math.round(510 - 5.1 * diff)), "#" + ("000000" + (65536 * n + 256 * e + 0).toString(16)).slice(-6);
-}
-    function perc2color(diff) {
-        var n, e;
-        if (diff < 50) {
-            e = 255;
-            n = Math.round(5.1 * diff);
-        } else {
-            n = 255;
-            e = Math.round(255 - 5.1 * (diff - 50)); // Adjust calculation for green component
-        }
-        return "#" + ("000000" + (65536 * n + 256 * e + 0).toString(16)).slice(-6);
+    if (diff < 50) {
+        e = 255;
+        n = Math.round(5.1 * diff);
+    } else {
+        n = 255;
+        e = Math.round(255 - 5.1 * (diff - 50)); // Adjust calculation for green component
     }
+    return "#" + ("000000" + (65536 * n + 256 * e + 0).toString(16)).slice(-6);
+}
 
 function debugUpdate(msg) {
     var content = $("#debugContainer").html();
