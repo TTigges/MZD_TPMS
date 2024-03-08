@@ -18,7 +18,10 @@
     width: 100%;
     z-index: 20001;
     background: url('../img/background.jpg') no-repeat scroll center center;
+    font-size: 18px;
+    line-height: 22px;
     font-family: 'Titillium', Arial, sans-serif;
+    color: #fff;
 }
 /* ************
  * Info Layer */
@@ -31,14 +34,15 @@
     bottom: 0;
     height: 100%;
     width: 100%;
+    transition: margin 1s;
     background: url('../img/topview_470.png') no-repeat scroll center center;
-    font-family: 'Titillium', Arial, sans-serif;
 }
 /* Tire Containers */
 #TpmsContainer #InfoLayer .tireContainer {
     position: absolute;
     width: 150px;
     height: 59px;
+    border: none; /* 1px solid rgba(255,255,255,.15); /* DEBUG */
     font-family: 'Titillium', Arial, sans-serif;
 }
 #TpmsContainer #InfoLayer .tireContainer.front {
@@ -156,11 +160,14 @@
 /* ************
  * Side Items */
 #TpmsContainer #InfoLayer .sideItem {
-    position: absolute;
+    position: fixed;
     width: 125px;
     padding: 10px;
     border: 1px solid rgba(255,255,255,0);
     transition: all 1s ease;
+}
+#TpmsContainer #InfoLayer .sideItem .sideItemEngine {
+    display: none;
 }
 #TpmsContainer #InfoLayer .sideItemLeft {
     left: 0;
@@ -175,7 +182,16 @@
     border-right: none;
 }
 #TpmsContainer #InfoLayer .sideItemOne {
-    top: 25px;
+    top: 100px;
+}
+#TpmsContainer #InfoLayer .sideItemTwo {
+    top: 175px;
+}
+#TpmsContainer #InfoLayer .sideItemThree {
+    top: 250px;
+}
+#TpmsContainer #InfoLayer .sideItemFour {
+    top: 325px;
 }
 #TpmsContainer #InfoLayer .sideItem .sideItemTop {
     margin-bottom: 2px;
@@ -203,5 +219,242 @@
 /* *************
  * Setup Layer */
 #TpmsContainer #SetupLayer {
+    display: block;
+}
+#TpmsContainer #SetupLayer #SetupContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    /*border: 1px solid rgba(255,255,255,.75);*/
+}
+/* ************
+ * Tire Setup */
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup {
+    width: 90%;
+    position: absolute;
+    top: 20px;
+    right: -5%;
+    bottom: 10px;
+    text-align: center;
+    opacity: 0;
+    transition: all 1s;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer {
+    position: absolute;
+    width: 65%;
+    height: 100%;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox {
+    position: absolute;
+    padding: 5px;
+    width: 190px;
+    height: 140px;
+    border: 1px solid rgba(255,255,255,.75);
+    background: rgba(0, 0, 0, .75);
+    font-size: 18px;
+    line-height: 22px;
+    font-family: 'Titillium', Arial, sans-serif;
+    text-align: left;
+    color: #fff;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox1 {
+    left: 20px;
+    top: 15px;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox2 {
+    right: 20px;
+    top: 15px;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox3 {
+    left: 20px;
+    bottom: 15px;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox4 {
+    right: 20px;
+    bottom: 15px;
+}
+/**/
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span {
+  display: block;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.label {
+  text-transform: uppercase;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.id {
+  margin-top: 10px;
+  /*text-transform: full-width;*/
+  /*letter-spacing: -6px;*/
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.id:before {
+  content: "ID: ";
+  color: rgba(255,255,255,.5);
+  text-transform: none;
+  letter-spacing: normal;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.pres {
+  margin-top: 10px;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.pres:after {
+  content: " bar";
+  color: rgba(255,255,255,.5);
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.temp {
+  margin-top: 5px;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox span.temp:after {
+  content: "°C";
+  color: rgba(255,255,255,.5);
+}
+/**/
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox.active {
+  border-color: rgba(255,0,0,.75);
+}
+/**/
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup .buttonContainer {
+    position: absolute;
+    right: 0;
+    width: 30%;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup button {
+    position: relative;
+    display: block;
+    background: none;
+    outline: none;
+    padding: 10px;
+    width: 95%;
+    margin: 15px auto 35px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,.5);
+    transition: border-color .25s ease;
+    color: #fff;
+    font-size: 18px;
+    line-height: 22px;
+    font-family: 'Titillium', Arial, sans-serif;
+}
+#TpmsContainer #SetupLayer #SetupContainer #TireIdSetup button.active {
+  border-color: rgba(255,0,0,.75);
+}
+/* *************
+ * Setup Modal */
+#SetupLayer #SetupModal {
+  display: none;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  /*overflow: hidden;*/
+  background: rgba(0,0,0,.75);
+}
+#SetupLayer #SetupModal ul#SetupModalIDBox {
+  display: block;
+  list-style-type: none;
+  position: relative;
+  width: 300px;
+  margin: 75px auto;
+}
+#SetupLayer #SetupModal ul li {
+  text-align: left;
+  padding: 5px;
+  margin-top: -1px;
+  border: 1px solid rgba(255,255,255,.75);
+  z-index: 99;
+}
+#SetupLayer #SetupModal ul li.active {
+  border-color: rgba(255,0,0,.75);
+  position: relative;
+  z-index: 999;
+}
+#SetupLayer #SetupModal ul li span {
+  display: inline-block;
+}
+#SetupLayer #SetupModal ul li span.id {
+  text-transform: none;
+  /*letter-spacing: -6px;*/
+}
+#SetupLayer #SetupModal ul li span.id:before {
+  content: "ID: ";
+  color: rgba(255,255,255,.5);
+  /*text-transform: none;*/
+  /*letter-spacing: normal;*/
+}
+#SetupLayer #SetupModal ul li span.pres {
+  margin-left: 15px;
+  float: right;
+}
+#SetupLayer #SetupModal ul li span.pres:after {
+  content: " bar";
+  color: rgba(255,255,255,.5);
+}
+#SetupLayer #SetupModal ul li span.temp {
+  margin-left: 15px;
+  width: 50px;
+  text-align: right;
+  float: right;
+}
+#SetupLayer #SetupModal ul li span.temp:after {
+  content: "°C";
+  color: rgba(255,255,255,.5);
+}
+#SetupLayer #SetupModal #SetupModalSaveWarning {
+  display: none;
+}
+/* ***************
+ * Setup Message */
+#MessageContainer {
+  display: none;
+  position: absolute;
+  top: 21px;
+  left: 21px;
+  right: 21px;
+  bottom: 21px;
+  overflow: hidden;
+  background: rgba(0,0,0,.75);
+  font-size: 18px;
+  line-height: 22px;
+  font-family: 'Titillium', Arial, sans-serif;
+}
+/* *********
+ * Actions */
+#TpmsContainer.SetupActive #InfoLayer {
+    margin-left: -16%;
+}
+#TpmsContainer.SetupActive .sideItem {
+    top: -100px;
+}
+#TpmsContainer.SetupActive #SetupLayer #SetupContainer #TireIdSetup {
+    opacity: 1;
+    right: 5%;
+}
+#TpmsContainer.SetupActive #InfoLayer .tireContainer {
+  opacity: .5;
+}
+/* *************
+ * Debug Layer */
+#TpmsContainer #DebugLayer {
     display: none;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    overflow: hidden;
+    background: rgba(0,0,0,.5);
+    border: 1px solid #fff;
+    font-size: 14px;
+    line-height: 22px;
+    font-family: 'Titillium', Arial, sans-serif;
+}
+#TpmsContainer #DebugLayer #debugContainer {
+    position: absolute;
+    bottom: 0;
+}
+#TpmsContainer #DebugLayer #debugContainer span.z {
+    display: inline-block;
+    width: 25px;
+    margin-right: 5px;
+    text-align: right;
 }
