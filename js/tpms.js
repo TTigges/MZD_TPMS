@@ -136,7 +136,7 @@ $(document).ready(function() {
 		$('#'+pos+'Tire').attr("class", tireClass);
 
 		var scaleClass = value > pressureSettings.normal ? "scale scalenorm black" : "scale scalenorm";
-		$('.scalenorm').attr("class", scaleClass);
+		$('#'+pos+'ScaleNorm').attr("class", scaleClass);
 
 	}
     // --------------------------------------------------------------------------

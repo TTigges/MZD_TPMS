@@ -55,7 +55,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '      <div id="flTire" class="tire"></div>' +
     '      <div class="barGraph">' +
     '        <div id="flBar" class="bar"></div>' +
-    '        <div class="scale scalenorm"></div>' +
+    '        <div id="flScaleNorm" class="scale scalenorm"></div>' +
     '        <div class="scale scalewarn scalelow"></div>' +
     '        <div class="scale scalewarn scalehigh"></div>' +
     '      </div>' +
@@ -73,7 +73,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '      <div id="frTire" class="tire"></div>' +
     '      <div class="barGraph">' +
     '        <div id="frBar" class="bar"></div>' +
-    '        <div class="scale scalenorm"></div>' +
+    '        <div id="frScaleNorm" class="scale scalenorm"></div>' +
     '        <div class="scale scalewarn scalelow"></div>' +
     '        <div class="scale scalewarn scalehigh"></div>' +
     '      </div>' +
@@ -91,7 +91,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '      <div id="rlTire" class="tire"></div>' +
     '      <div class="barGraph">' +
     '        <div id="rlBar" class="bar"></div>' +
-    '        <div class="scale scalenorm"></div>' +
+    '        <div id="rlScaleNorm" class="scale scalenorm"></div>' +
     '        <div class="scale scalewarn scalelow"></div>' +
     '        <div class="scale scalewarn scalehigh"></div>' +
     '      </div>' +
@@ -109,7 +109,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '      <div id="rrTire" class="tire"></div>' +
     '      <div class="barGraph">' +
     '        <div id="rrBar" class="bar"></div>' +
-    '        <div class="scale scalenorm"></div>' +
+    '        <div id="rrScaleNorm" class="scale scalenorm"></div>' +
     '        <div class="scale scalewarn scalelow"></div>' +
     '        <div class="scale scalewarn scalehigh"></div>' +
     '      </div>' +
