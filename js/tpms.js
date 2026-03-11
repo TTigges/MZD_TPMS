@@ -11,7 +11,7 @@ var debugContainer = false;
 var debugLine = 1;
 var debugIds  = 0;
 //
-var setupLayer = false; // false/1/2
+var setupLayer = false; // false = no setup / 1 = setup / 2 = tire ID selection / 3 = configuration
 var setupItems = ["SetupIDBox1", "SetupIDBox2", "SetupIDBox3", "SetupIDBox4",
                   "SetupIDClear", "SetupIDReset", "SetupIDSwitch", "SetupIDSave",
                   "CloseSetup"];
