@@ -97,4 +97,8 @@
 
 #endif
 
+/* Broadcast mode: per-sensor update intervals */
+#define TPMS_DEFAULT_INTERVAL_MS  1000   /* 1 Hz  — tyre pressure changes slowly */
+#define OIL_DEFAULT_INTERVAL_MS    250   /* 4 Hz  — responsive for driving */
+
 

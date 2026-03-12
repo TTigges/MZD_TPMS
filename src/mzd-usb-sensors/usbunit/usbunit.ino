@@ -98,9 +98,58 @@ char paramData[PARAMDATA_MAX_SIZE];
 int paramDataPtr;
 
 
+/* -------------------------------------------------------------------------
+ * Broadcast mode
+ * -------------------------------------------------------------------------
+ * When active, sensors push data autonomously at their configured rates.
+ * The host starts broadcast with 'B', stops with 'X'.
+ * Action indices must match the addAction() order in setup().
+ */
+#define BROADCAST_TPMS_IDX  0
+#define BROADCAST_OIL_IDX   1
+
+typedef struct {
+  unsigned long lastUpdate;
+  unsigned int  intervalMs;
+} sensor_timing_t;
+
+static sensor_timing_t tpms_timing = { 0, TPMS_DEFAULT_INTERVAL_MS };
+static sensor_timing_t oil_timing  = { 0, OIL_DEFAULT_INTERVAL_MS  };
+
+static bool broadcastEnabled = false;
+
+static bool shouldUpdate(sensor_timing_t *t, unsigned long now) {
+  if (now - t->lastUpdate >= (unsigned long)t->intervalMs) {
+    t->lastUpdate = now;
+    return true;
+  }
+  return false;
+}
+
+static void sendBroadcastData() {
+  unsigned long now = millis();
+  bool sentSomething = false;
+
+  if (shouldUpdate(&tpms_timing, now)) {
+    actionList[BROADCAST_TPMS_IDX]->getData();
+    actionList[BROADCAST_TPMS_IDX]->sendData();
+    sentSomething = true;
+  }
+
+  if (shouldUpdate(&oil_timing, now)) {
+    actionList[BROADCAST_OIL_IDX]->getData();
+    actionList[BROADCAST_OIL_IDX]->sendData();
+    sentSomething = true;
+  }
+
+  if (sentSomething) {
+    sendEOT();
+  }
+}
+/* ----------------------------------------------------------------------- */
 
 void setup() {
-  
+
   resetState();
 
   pinMode( LED_BUILTIN, OUTPUT);
@@ -159,10 +208,27 @@ void loop() {
   case NACK_OR_ERROR:
     handleError();
     break;
-    
+
+  case BROADCAST_START:
+    broadcastEnabled = true;
+    tpms_timing.lastUpdate = millis() - tpms_timing.intervalMs;
+    oil_timing.lastUpdate  = millis() - oil_timing.intervalMs;
+    sendEOT();
+    resetState();
+    break;
+
+  case BROADCAST_STOP:
+    broadcastEnabled = false;
+    sendEOT();
+    resetState();
+    break;
+
   case NO_COMMAND:
     /* Timeout 10 msec */
     runTimeout();
+    if (broadcastEnabled) {
+      sendBroadcastData();
+    }
     break;
 
   default:

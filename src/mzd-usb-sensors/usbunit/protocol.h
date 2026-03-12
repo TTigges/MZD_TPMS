@@ -18,3 +18,5 @@ const char  SET_FUNCTION        = 'S';
 const char  MORE_DATA           = '+';
 const char  END_OF_TRANSMISSION = '.';
 const char  NACK_OR_ERROR       = '/';
+const char  BROADCAST_START     = 'B';
+const char  BROADCAST_STOP      = 'X';
