@@ -118,6 +118,10 @@ static sensor_timing_t oil_timing  = { 0, OIL_DEFAULT_INTERVAL_MS  };
 
 static bool broadcastEnabled = false;
 
+/* Forward declaration — actionList is defined in action.ino,
+ * which is compiled after usbunit.ino in the Arduino build. */
+extern Action *actionList[MAX_ACTIONS];
+
 static bool shouldUpdate(sensor_timing_t *t, unsigned long now) {
   if (now - t->lastUpdate >= (unsigned long)t->intervalMs) {
     t->lastUpdate = now;

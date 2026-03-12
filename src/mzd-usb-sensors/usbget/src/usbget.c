@@ -84,6 +84,7 @@
 #include "support.h"
 #include "usb.h"
 #include "protocol.h"
+#include "http_server.h"
 #include "daemon.h"
 
 #include <unistd.h>
