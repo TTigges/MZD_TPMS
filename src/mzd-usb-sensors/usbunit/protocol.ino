@@ -72,7 +72,7 @@ const char *getData() {
 void sendCommand(char command, char *data)
 {
   Serial.print(command);
-  if( data != NULL || strlen(data) > 0) {
+  if( data != NULL && strlen(data) > 0) {
     Serial.print( data);
   }
   Serial.println();  
@@ -94,14 +94,13 @@ void sendEOT()
     sendError( getErrorMsgAndClear());   
   } else {
     Serial.println(END_OF_TRANSMISSION);
-    Serial.flush();
   }
 }
 
 void sendError( char *message)
 {
   Serial.print(NACK_OR_ERROR);
-  if( message != NULL || strlen(message) > 0) {
+  if( message != NULL && strlen(message) > 0) {
     Serial.print( message);
   }
   Serial.println();  

@@ -8,16 +8,11 @@
 #include "protocol.h"
 #include "action.h"
 
-#include "tpms_ble.h"
 #include "cc1101.h"
 #include "tpms_433.h"
 #include "oil_sensor.h"
-#include "rgb_analog.h"
-#include "ws2801.h"
 
 String versionInfo = "0.3.0";
-
-#include "display.h"
 
 
 #define ENABLE_MEMDEBUG
@@ -119,30 +114,13 @@ void setup() {
 
   /* Register all supported actions.
    * There is a limit of supported action.
-   * If you need more that 6 supported actions
+   * If you need more than 2 supported actions
    * increase MAX_ACTIONS in action.h
    * 
    */
 
-#ifdef TPMS_BLE_SUPPORT
-  addAction( new TpmsBLE);
-#endif
-#ifdef TPMS_433_SUPPORT
   addAction( &tpmsReceiver);
-#endif
-#ifdef OIL_SUPPORT
   addAction( new OilSensor);
-#endif
-#ifdef RGB_SUPPORT
-  addAction( new RgbAnalog);
-#endif
-#ifdef WS2801_SUPPORT
-  addAction( new WS2801);
-#endif
-
-  #ifdef DISPLAY_SUPPORT
-  addAction( new Display);
-#endif
 
   setupActions();
 

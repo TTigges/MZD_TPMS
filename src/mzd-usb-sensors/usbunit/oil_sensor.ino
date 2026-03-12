@@ -61,13 +61,13 @@ void OilSensor::getData()
 
 void OilSensor::sendData()
 {
-  /* oiltemp: xx oilpress: yy */
-  sendMoreDataStart();
-  Serial.print( "oiltemp: ");
-  Serial.print( oilTemp,1);
-  Serial.print( " oilpress: ");
-  Serial.print( oilPress,2);
-  sendMoreDataEnd();
+  /* +oiltemp: xx oilpress: yy\r\n */
+  char tstr[8], pstr[8];
+  static char line[48];
+  dtostrf(oilTemp, 1, 1, tstr);
+  dtostrf(oilPress, 1, 2, pstr);
+  int len = snprintf(line, sizeof(line), "+oiltemp: %s oilpress: %s\r\n", tstr, pstr);
+  Serial.write((const uint8_t*)line, len);
 }
 
 void OilSensor::sendConfig()

@@ -171,31 +171,25 @@ void Tpms433::getData()
  */
 void Tpms433::sendData()
 {
-  char hexstr[ 2 * TPMS_433_ID_LENGTH +1];
-
-  /* FL: temp press FR: temp press RL: temp press RR: temp press */
-  /* UPDATE 2021.03.07 TTigges: */
   /* FL: id temp press FR: id temp press RL: id temp press RR: id temp press */
+  char hexstr[2 * TPMS_433_ID_LENGTH + 1];
+  char tstr[8], pstr[8];
+  static char line[128];
+  int pos = 0;
 
+  line[pos++] = MORE_DATA;
 
-  sendMoreDataStart();
-  
-  for( byte i = 0; i < TPMS_433_NUM_SENSORS; i++) {
-    id2hex( sensor[i].sensorId, hexstr );
-    hexstr[ 2 * TPMS_433_ID_LENGTH ] = '\0';
-    
-    Serial.print(i);
-    Serial.print(F(": "));
-    Serial.print(hexstr);
-    Serial.print(F(" "));
-    Serial.print(sensor[i].temp_c,1);
-    Serial.print(F(" "));
-    Serial.print(sensor[i].press_bar,2);
-    Serial.print(F(" "));
-
+  for (byte i = 0; i < TPMS_433_NUM_SENSORS; i++) {
+    id2hex(sensor[i].sensorId, hexstr);
+    hexstr[2 * TPMS_433_ID_LENGTH] = '\0';
+    dtostrf(sensor[i].temp_c, 1, 1, tstr);
+    dtostrf(sensor[i].press_bar, 1, 2, pstr);
+    pos += snprintf(line + pos, sizeof(line) - pos, "%d: %s %s %s ", i, hexstr, tstr, pstr);
   }
 
-  sendMoreDataEnd();
+  line[pos++] = '\r';
+  line[pos++] = '\n';
+  Serial.write((const uint8_t*)line, pos);
 }
 
 /*

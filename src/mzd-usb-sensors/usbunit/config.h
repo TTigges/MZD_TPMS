@@ -63,33 +63,15 @@
 
 /* Enable supported features per platform */
 
-#ifdef REDBEAR_DUO
-
- #define TPMS_BLE_SUPPORT
- #define OIL_SUPPORT
- #define RGB_SUPPORT
- #define WS2801_SUPPORT
-
-#endif
-
 #ifdef ARDUINO_GENERIC
 
- #define DISPLAY_SUPPORT
  #define CC1101_SUPPORT
  #define TPMS_433_SUPPORT
  #define OIL_SUPPORT
- #define RGB_SUPPORT
-// #define WS2801_SUPPORT
 
 #endif
 
 /* **************************************************************** */
-
-#ifdef DISPLAY_SUPPORT
-
- #define DISPLAY_I2C_ADDRESS 0x3C
-
-#endif
 
 /*
  * Configuration of all modules.
@@ -115,30 +97,4 @@
 
 #endif
 
-#ifdef RGB_SUPPORT
 
- /* It is correct that we use Dx pins here.
-  * analogWrite() generates PWM signals on Dx pins.
-  * 
-  * NOTE: Not all pins are PWM capable.
-  *       See Arduino reference pages.
-  */
-  
- #define RGB_RED_PORT     D4
- #define RGB_GREEN_PORT   D5
- #define RGB_BLUE_PORT    D7
-
-#endif
-
-#ifdef WS2801_SUPPORT
-
- /* Number of LEDs of the LED strip.
-  * This is the default value. It can be changed via set command.
-  * The value is saved in the EEPROM and survives a reboot.
-  */
- #define WS2801_LED_COUNT 4
-
- #define WS2801_DATA_PIN  D4
- #define WS2801_CLOCK_PIN D5
- 
-#endif

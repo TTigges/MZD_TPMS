@@ -8,7 +8,7 @@
 /* Disable simulation to get real data */
 boolean actionSimulate = false;
 
-#define MAX_ACTIONS 6
+#define MAX_ACTIONS 2
 
 /* This is the superclass of all actions.
  * Every action has to implement below 6 methods.
