@@ -104,7 +104,9 @@ typedef enum ProtocolChar {
     SET_ACTION          = 'S',
     MORE_DATA           = '+',
     END_OF_TRANSMISSION = '.',
-    NACK_OR_ERROR       = '/'
+    NACK_OR_ERROR       = '/',
+    BROADCAST_START     = 'B',
+    BROADCAST_STOP      = 'X'
 } ProtocolChar;
 
 #define TO_char( p) ((char)(p))

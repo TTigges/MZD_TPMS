@@ -13,7 +13,7 @@ LDFLAGS= --sysroot=$(SYSROOT) -rdynamic -pthread -ldl -static-libstdc++ -lusb-1.
 ####
 
 TARGET= usbget
-MODULES= support.o usb.o ftdi.o atmega32u4.o ch340.o protocol.o usbget.o
+MODULES= support.o usb.o ftdi.o atmega32u4.o ch340.o protocol.o usbget.o daemon.o http_server.o
 
 all: $(TARGET)
 
@@ -35,8 +35,14 @@ protocol.o: ../src/protocol.c ../src/support.h ../src/protocol.h
 support.o: ../src/support.c ../src/support.h
 	$(CC) $(CFLAGS) -c ../src/support.c
 
-usbget.o: ../src/usbget.c ../src/support.h ../src/usb.h ../src/protocol.h
+usbget.o: ../src/usbget.c ../src/support.h ../src/usb.h ../src/protocol.h ../src/daemon.h
 	$(CC) $(CFLAGS) -c ../src/usbget.c
+
+daemon.o: ../src/daemon.c ../src/daemon.h ../src/http_server.h ../src/protocol.h ../src/usb.h ../src/support.h
+	$(CC) $(CFLAGS) -c ../src/daemon.c
+
+http_server.o: ../src/http_server.c ../src/http_server.h ../src/support.h
+	$(CC) $(CFLAGS) -c ../src/http_server.c
 
 usb.o: ../src/usb.c ../src/support.h ../src/usb.h ../src/ftdi.h ../src/ch340.h
 	$(CC) $(CFLAGS) -c ../src/usb.c

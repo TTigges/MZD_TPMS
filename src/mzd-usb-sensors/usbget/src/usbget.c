@@ -84,16 +84,20 @@
 #include "support.h"
 #include "usb.h"
 #include "protocol.h"
+#include "daemon.h"
 
 #include <unistd.h>
 
 
-static const char* VERSION = "0.2.1";
-
+static const char* VERSION = "0.3.0";
 
 
 static char deviceName[MAX_DEVICENAME_LEN];
 static usbDevice *device = NULL;
+
+/* Daemon mode options */
+static boolean daemon_mode = FALSE;
+static int     http_port   = HTTP_DEFAULT_PORT;
 
 /* Baud rate for Micros that are attached via FTDI or similar chip */
 #define USB_SPEED             ((uint32_t)19200)
@@ -177,6 +181,15 @@ int main( int argc, char **argv)
         exit(-1);
     }
 
+    /* Daemon mode: start HTTP server and stream broadcast data forever */
+    if( daemon_mode) {
+        usbDrainInput( device);
+        returnCode rc = run_daemon( device, http_port);
+        usbClose( &device);
+        releaseLock();
+        exit( rc == RC_OK ? 0 : -1);
+    }
+
     usbDrainInput( device);
 
     while( (runOption = parseArguments( argc, argv)))
@@ -239,7 +252,7 @@ static void parseOptions( int argc, char **argv)
 
     deviceName[0] = '\0';
 
-#define ALL_GETOPTS "vd:ulc:iq:s:p:?"
+#define ALL_GETOPTS "vd:ulc:iq:s:p:?DP:"
 
     while((opt = getopt(argc, argv, ALL_GETOPTS)) != -1) {
         if( (char)opt ==  'v') {
@@ -251,6 +264,16 @@ static void parseOptions( int argc, char **argv)
         } else if( (char)opt == 'u') {
             usbList();
             exit(0);
+
+        } else if( (char)opt == 'D') {
+            daemon_mode = TRUE;
+
+        } else if( (char)opt == 'P') {
+            http_port = atoi( optarg);
+            if( http_port <= 0 || http_port > 65535) {
+                printfLog( "Invalid port: %s\n", optarg);
+                exit(-1);
+            }
 
         } else if( (char)opt == '?') {
             usage();
@@ -341,6 +364,8 @@ static void usage()
         printf("          %s\n", name);
     }
     printf("     -v                         Enable debug output\n");
+    printf("     -D                         Daemon mode (HTTP+SSE server)\n");
+    printf("     -P port                    HTTP port for daemon mode (default: %d)\n", HTTP_DEFAULT_PORT);
     printf("     -?                         Print usage\n\n");
     printf("   Commands:\n");
     printf("     -u                         List USB devices\n");
