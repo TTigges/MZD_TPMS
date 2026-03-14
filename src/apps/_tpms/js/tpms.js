@@ -49,53 +49,71 @@ pressIsPsi = false;
 
 $(document).ready(function() {
     debugUpdate("Initialize TPMS");
-    // websocket
+    // SSE connection to usbget2 daemon
     // --------------------------------------------------------------------------
-    function retrievedata(action) {
-        var tpmsWebsocket = new WebSocket("ws://127.0.0.1:9969/");
-        tpmsWebsocket.onmessage = function(event) {
-            var res = event.data.split("#");
-            switch (res[0]) {
-                // TBD: use "tpms"
-                case "envData":
-                    updateOutsideTemp(res[4]);
-                    updateCoolantTemp(res[6]);
-                    updateOilTemp(res[10]);
-                    updateOilPres(res[11]);
-                    break;
-                case "tpmsData":
-                    sensorData[0].id   = res[1];
-                    sensorData[0].temp = res[2];
-                    sensorData[0].pres = res[3];
-                    sensorData[1].id   = res[4];
-                    sensorData[1].temp = res[5];
-                    sensorData[1].pres = res[6];
-                    sensorData[2].id   = res[7];
-                    sensorData[2].temp = res[8];
-                    sensorData[2].pres = res[9];
-                    sensorData[3].id   = res[10];
-                    sensorData[3].temp = res[11];
-                    sensorData[3].pres = res[12];
-                    runUpdate();
-                    break;
-                case "saveTireIDs":
-                    AddDebug(res[1]);
-                    saveTireIDs = false;
-                    debugIds = 0;
-                    break;
-                default:
-                    break;
+    function startSSE() {
+        var source = new EventSource("http://127.0.0.1:9970/stream");
+
+        source.onmessage = function(event) {
+            var data;
+            try {
+                data = JSON.parse(event.data);
+            } catch(e) {
+                return;
+            }
+
+            if (data.tpms) {
+                for (var i = 0; i < 4; i++) {
+                    var s = data.tpms[i.toString()];
+                    if (s) {
+                        sensorData[i].id   = s.id;
+                        sensorData[i].temp = s.t;
+                        sensorData[i].pres = s.p;
+                    }
+                }
+                runUpdate();
+            }
+
+            if (data.oil) {
+                updateOilTemp(data.oil.t);
+                updateOilPres(data.oil.p);
+            }
+
+            if (saveTireIDs) {
+                saveTireIDs = false;
+                saveConfig();
             }
         };
-        tpmsWebsocket.onopen = function() {
-            tpmsWebsocket.send(action);
-        };
-        tpmsWebsocket.onerror = function(e) {
-            console.log("err: " + e.toString());
+
+        source.onerror = function() {
+            if (debugContainer) {
+                debugUpdate("SSE connection error");
+            }
         };
     }
+
+    function saveConfig() {
+        var body = JSON.stringify({
+            tpms: {
+                fl: tempSaved.fl,
+                fr: tempSaved.fr,
+                rl: tempSaved.rl,
+                rr: tempSaved.rr
+            }
+        });
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://127.0.0.1:9970/config", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                AddDebug("Config gespeichert: " + xhr.status);
+                debugIds = 0;
+            }
+        };
+        xhr.send(body);
+    }
     // --------------------------------------------------------------------------
-    // websocket end
+    // SSE end
     // --------------------------------------------------------------------------
     //
     // BEGINN TPMS UPDATES
@@ -202,21 +220,31 @@ $(document).ready(function() {
 		$('#oilPressureValue').html(value.toString().replace(".",","));
     }
 
-    // Start data retrieval
+    // WebSocket for vehicle data (envData via speedometer.sh / websocketd :9969)
+    // --------------------------------------------------------------------------
+    function startEnvData() {
+        var ws = new WebSocket("ws://127.0.0.1:9969/");
+        ws.onopen = function() {
+            ws.send("envData");
+        };
+        ws.onmessage = function(event) {
+            var res = event.data.split("#");
+            if (res[0] === "envData") {
+                updateOutsideTemp(res[4]);
+                updateCoolantTemp(res[6]);
+            }
+        };
+        ws.onerror = function() {};
+        ws.onclose = function() {
+            setTimeout(startEnvData, 5000); // reconnect on close
+        };
+    }
+    // --------------------------------------------------------------------------
+
+    // Start SSE stream and vehicle data
     setTimeout(function() {
-        if (debugContainer) {
-            debugUpdate("websocket call");
-        }
-        retrievedata('envData');
-        retrievedata('tpmsData');
-        if (saveTireIDs) {
-            debugUpdate("attempting to save");
-            debugUpdate("saveTireIDs;"+tempSaved.fl+";"+tempSaved.fr+";"+tempSaved.rl+";"+tempSaved.rr);
-            retrievedata("saveTireIDs;"+tempSaved.fl+";"+tempSaved.fr+";"+tempSaved.rl+";"+tempSaved.rr);
-        }
-        else {
-            debugUpdate("nothing to save");
-        }
+        startSSE();
+        startEnvData();
     }, 3000);
 });
 
