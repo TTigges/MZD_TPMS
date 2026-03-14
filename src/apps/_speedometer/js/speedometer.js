@@ -29,16 +29,16 @@ var engineSpeedTop = 0;
 var outsideTemp = 0;
 var intakeTemp = 0;
 var coolantTemp = 0;
-var oilTemp = 0;
-var oilPres = 0;
-var tpmsFlTemp = 0;
-var tpmsFlPres = 0;
-var tpmsFrTemp = 0;
-var tpmsFrPres = 0;
-var tpmsRlTemp = 0;
-var tpmsRlPres = 0;
-var tpmsRrTemp = 0;
-var tpmsRrPres = 0;
+var oilTemp = "-";
+var oilPres = "-";
+var tpmsFlTemp = "-";
+var tpmsFlPres = "-";
+var tpmsFrTemp = "-";
+var tpmsFrPres = "-";
+var tpmsRlTemp = "-";
+var tpmsRlPres = "-";
+var tpmsRrTemp = "-";
+var tpmsRrPres = "-";
 var gearPos = "---";
 var lastGPSspeedValue = 0;
 var lastEnginespeedValue = 0;
@@ -103,16 +103,6 @@ $(document).ready(function() {
           updateGearPos(res[7]);
           updateFuelGauge(res[8]);
           updateBatSOC(res[9]);
-          updateOilTemp(res[10]);
-          updateOilPres(res[11]);
-          updateTpmsFlTemp(res[13]);
-          updateTpmsFlPres(res[14]);
-          updateTpmsFrTemp(res[16]);
-          updateTpmsFrPres(res[17]);
-          updateTpmsRlTemp(res[19]);
-          updateTpmsRlPres(res[20]);
-          updateTpmsRrTemp(res[22]);
-          updateTpmsRrPres(res[23]);
           break;
         default:
           break;
@@ -670,83 +660,16 @@ $(document).ready(function() {
   // --------------------------------------------------------------------------
   // Update Oil Temperature
   // --------------------------------------------------------------------------
-  function updateOilTemp(tempVal) {
-    oilTemp = tempVal + "&deg;";
-    $('.oilTempValue').html(oilTemp);
-  }
-  // --------------------------------------------------------------------------
-  // Update Oil Pressure
-  // --------------------------------------------------------------------------
-  function updateOilPres(presVal) {
-   oilPres = presVal;
-    $('.oilPresValue').html(oilPres);
-  }
-  // --------------------------------------------------------------------------
-  //
-  // BEGINN TPMS UPDATES
-  //
-  // --------------------------------------------------------------------------
-  // --------------------------------------------------------------------------
-  // Update Front Left Temperature
-  // --------------------------------------------------------------------------
-  function updateTpmsFlTemp(tpmsFlTempVal) {
-    tpmsFlTemp = tpmsFlTempVal + "&deg;";
-    $('.tpmsFlTempValue').html(tpmsFlTemp);
-  }
-  // --------------------------------------------------------------------------
-  // Update Front Left Pressure
-  // --------------------------------------------------------------------------
-  function updateTpmsFlPres(tpmsFlPressVal) {
-    tpmsFlPres = tpmsFlPressVal;
-    $('.tpmsFlPresValue').html(tpmsFlPres);
-  }
-  // --------------------------------------------------------------------------
-  // Update Front Right Temperature
-  // --------------------------------------------------------------------------
-  function updateTpmsFrTemp(tpmsFrTempVal) {
-    tpmsFrTemp = tpmsFrTempVal + "&deg;";
-    $('.tpmsFrTempValue').html(tpmsFrTemp);
-  }
-  // --------------------------------------------------------------------------
-  // Update Front Right Pressure
-  // --------------------------------------------------------------------------
-  function updateTpmsFrPres(tpmsFrPressVal) {
-    tpmsFrPres = tpmsFrPressVal;
-    $('.tpmsFrPresValue').html(tpmsFrPres);
-  }
-  // --------------------------------------------------------------------------
-  // Update Rear Left Temperature
-  // --------------------------------------------------------------------------
-  function updateTpmsRlTemp(tpmsRlTempVal) {
-    tpmsRlTemp = tpmsRlTempVal + "&deg;";
-    $('.tpmsRlTempValue').html(tpmsRlTemp);
-  }
-  // --------------------------------------------------------------------------
-  // Update Rear Left Pressure
-  // --------------------------------------------------------------------------
-  function updateTpmsRlPres(tpmsRlPressVal) {
-    tpmsRlPres = tpmsRlPressVal;
-    $('.tpmsRlPresValue').html(tpmsRlPres);
-  }
-  // --------------------------------------------------------------------------
-  // Update Rear Right Temperature
-  // --------------------------------------------------------------------------
-  function updateTpmsRrTemp(tpmsRrTempVal) {
-    tpmsRrTemp = tpmsRrTempVal + "&deg;";
-    $('.tpmsRrTempValue').html(tpmsRrTemp);
-  }
-  // --------------------------------------------------------------------------
-  // Update Rear Right Pressure
-  // --------------------------------------------------------------------------
-  function updateTpmsRrPres(tpmsRrPressVal) {
-    tpmsRrPres = tpmsRrPressVal;
-    $('.tpmsRrPresValue').html(tpmsRrPres);
-  }
-  // --------------------------------------------------------------------------
-  //
-  // END TPMS UPDATES
-  //
-  // --------------------------------------------------------------------------
+  function updateOilTemp()  { $('.oilTempValue').html("-"); }
+  function updateOilPres()  { $('.oilPresValue').html("-"); }
+  function updateTpmsFlTemp() { $('.tpmsFlTempValue').html("-"); }
+  function updateTpmsFlPres() { $('.tpmsFlPresValue').html("-"); }
+  function updateTpmsFrTemp() { $('.tpmsFrTempValue').html("-"); }
+  function updateTpmsFrPres() { $('.tpmsFrPresValue').html("-"); }
+  function updateTpmsRlTemp() { $('.tpmsRlTempValue').html("-"); }
+  function updateTpmsRlPres() { $('.tpmsRlPresValue').html("-"); }
+  function updateTpmsRrTemp() { $('.tpmsRrTempValue').html("-"); }
+  function updateTpmsRrPres() { $('.tpmsRrPresValue').html("-"); }
   // --------------------------------------------------------------------------
   // Update Outside Temperature
   // --------------------------------------------------------------------------

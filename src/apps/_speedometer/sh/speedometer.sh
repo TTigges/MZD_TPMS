@@ -41,28 +41,9 @@ then
     CTMP=`smdb-read -n vdm_vdt_current_data -e EngClnt_Te_Actl`
     ITMP=`smdb-read -n vdm_vdt_current_data -e DR_IntakeAirTemp`
     OTMP=`smdb-read -n vdm_vdt_current_data -e Out-CarTemperature`
-   # LTMP=`smdb-read -n vdm_vdt_current_data -e Out-CarTemperature`
     BATSOC=`smdb-read -n vdm_vdt_current_data -e Battery_StateOfCharge`
-   # BATSOC=`smdb-read -n vdm_vdt_current_data -e BattTracSoc_Pc_Actl`
     GPOS=`smdb-read -n vdm_vdt_current_data -e TransmissionGearPosition`
-    /tmp/mnt/data_persist/dev/bin/usbget -q TPMS -q OIL
-   # "oiltemp: xx oilpress: yy"
-    OILTEMP=`cat /tmp/mnt/data_persist/dev/bin/oil.out | awk '{print $2}'`
-    OILPRES=`cat /tmp/mnt/data_persist/dev/bin/oil.out | awk '{print $4}'`
-   # "FL: xx yy FR: xx yy RL: xx yy RR: xx yy"
-    TPMSFLID=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $2}'`
-    TPMSFLTEMP=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $3}'`
-    TPMSFLPRES=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $4}'`
-    TPMSFRID=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $6}'`
-    TPMSFRTEMP=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $7}'`
-    TPMSFRPRES=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $8}'`
-    TPMSRLID=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $10}'`
-    TPMSRLTEMP=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $11}'`
-    TPMSRLPRES=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $12}'`
-    TPMSRRID=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $14}'`
-    TPMSRRTEMP=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $15}'`
-    TPMSRRPRES=`cat /tmp/mnt/data_persist/dev/bin/tpms.out | awk '{print $16}'`
-    echo "envData#${FUELEFF}#${TOTFUELEFF}#${AVGFUEL}#${OTMP}#${ITMP}#${CTMP}#${GPOS}#${FUELGAGE}#${BATSOC}#${OILTEMP}#${OILPRES}#${TPMSFLID}#${TPMSFLTEMP}#${TPMSFLPRES}#${TPMSFRID}#${TPMSFRTEMP}#${TPMSFRPRES}#${TPMSRLID}#${TPMSRLTEMP}#${TPMSRLPRES}#${TPMSRRID}#${TPMSRRTEMP}#${TPMSRRPRES}"
+    echo "envData#${FUELEFF}#${TOTFUELEFF}#${AVGFUEL}#${OTMP}#${ITMP}#${CTMP}#${GPOS}#${FUELGAGE}#${BATSOC}"
     sleep 3.0
   done
 fi
