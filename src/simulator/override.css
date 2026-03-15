@@ -1,0 +1,16 @@
+#TpmsTmplt_0 {
+    position: relative;
+    height: 450px;
+}
+
+#TpmsContainer #InfoLayer .tireContainer.front {
+  top: 81px;
+}
+
+#TpmsContainer #InfoLayer .tireContainer.rear {
+  top: 303px;
+}
+
+#TpmsContainer #InfoLayer .sideItem {
+    position: inherit;
+}

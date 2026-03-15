@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>TPMS Simulator</title>
+<!-- jQuery (muss vor allem anderen kommen) -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<!-- App-CSS: Pfade über /apps/ URL -->
+<link rel="stylesheet" href="/apps/_tpms/template/css/TpmsTmplt.css">
+<link rel="stylesheet" href="/apps/_tpms/css/_tpmsApp.css">
+<link rel="stylesheet" href="override.css">
+<style>
+body {
+background: #222;
+margin: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+padding-top: 20px;
+font-family: Arial, sans-serif;
+}
+/* ── CMU frame ────────────────────────────────── */
+#screen {
+width: 800px; height: 480px;
+position: relative; overflow: hidden;
+border: 2px solid #555; border-radius: 4px;
+flex-shrink: 0;
+}
+#statusBar {
+width: 800px; height: 30px;
+background: #111; position: relative; z-index: 10;
+}
+#statusBar .clock {
+color: #aaa; font-size: 12px;
+position: absolute; right: 10px; top: 7px;
+}
+/* ── Simulator controls ───────────────────────── */
+#simulatorControls {
+width: 800px;
+background: #1a1a2e;
+border: 1px solid #444;
+border-radius: 4px;
+margin-top: 16px;
+padding: 14px 16px;
+color: #ccc;
+font-size: 11px;
+}
+#simulatorControls h3 {
+color: #7eb8f7; font-size: 13px;
+margin: 0 0 10px 0; padding-bottom: 6px;
+border-bottom: 1px solid #334;
+}
+.tire-grid {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr 1fr;
+gap: 8px 14px;
+margin-bottom: 12px;
+}
+.ctrl-group label {
+display: block; margin-bottom: 2px; color: #aaa;
+}
+.ctrl-group input[type=range] { width: 100%; }
+.ctrl-group .val { color: #ffd700; font-weight: bold; }
+.ctrl-group input[type=checkbox] { margin-right: 4px; }
+.two-col {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px 14px;
+margin-bottom: 12px;
+}
+.section-label {
+color: #7eb8f7; font-size: 11px; font-weight: bold;
+margin: 10px 0 4px 0; text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+<!-- ── CMU Screen ─────────────────────────────────────────── -->
+<div id="screen">
+<div id="statusBar">
+<span class="clock" id="clock"></span>
+</div>
+<!-- TpmsTmplt schreibt seinen HTML-Code in dieses div -->
+<div id="TpmsTmplt_0"></div>
+</div>
+<!-- ── Simulator Controls ─────────────────────────────────── -->
+<div id="simulatorControls">
+<h3>Simulator Controls</h3>
+<div style="margin-bottom:10px;line-height:1.7;color:#aaa;font-size:11px;">
+  <b style="color:#7eb8f7;">Multicontroller:</b>
+  &nbsp;↑↓←→ Pfeiltasten &nbsp;|&nbsp;
+  <kbd style="background:#333;padding:1px 5px;border-radius:3px;">Enter</kbd> kurz = Select &nbsp;|&nbsp;
+  <kbd style="background:#333;padding:1px 5px;border-radius:3px;">Enter</kbd> lang (1,2s) = Setup öffnen &nbsp;|&nbsp;
+  Mausrad über Bildschirm = cw/ccw
+</div>
+<div class="section-label">Reifen (FL / FR / RL / RR)</div>
+<div class="tire-grid" id="tireGrid"></div>
+<div class="section-label">Öl & Umgebung</div>
+<div class="two-col">
+<div class="ctrl-group">
+<label>Öl-Temp: <span class="val" id="oilTVal">85</span> °C</label>
+<input type="range" id="oilT" min="0" max="150" step="1" value="85">
+</div>
+<div class="ctrl-group">
+<label>Öl-Druck: <span class="val" id="oilPVal">3.45</span> bar</label>
+<input type="range" id="oilP" min="0" max="6" step="0.05" value="3.45">
+</div>
+<div class="ctrl-group">
+<label>Außentemp: <span class="val" id="outVal">20</span> °C</label>
+<input type="range" id="outT" min="-40" max="60" step="1" value="20">
+</div>
+<div class="ctrl-group">
+<label>Kühlmitteltemp: <span class="val" id="coolVal">90</span> °C</label>
+<input type="range" id="coolT" min="-40" max="120" step="1" value="90">
+</div>
+</div>
+</div>
+<!-- ── JCI Shims ───────────────────────────────────────────── -->
+<script>
+// no-op log object (CMU API)
+var log = {
+addSrcFile: function() {},
+debug: function() {}
+};
+// utility.loadScript shim: loads a script by path
+// CMU calls utility.loadScript("jci/gui/apps/_tpms/js/tpmsUpdate.js")
+// We remap jci/gui/apps/ → /apps/
+function utility() {}
+utility.loadScript = function(src) {
+var remapped = src.replace("jci/gui/apps/", "/apps/");
+var s = document.createElement("script");
+s.src = remapped;
+document.head.appendChild(s);
+};
+</script>
+<!-- ── App JS: Pfade über /apps/ URL ─────────────────────── -->
+<script src="/apps/_tpms/template/js/TpmsTmplt.js"></script>
+<script src="/apps/_tpms/js/tpms.js"></script>
+<script src="/apps/_tpms/js/_tpmsApp.js"></script>
+<!-- ── Simulator bootstrap ───────────────────────────────── -->
+<script>
+$(function() {
+// Uhr im Status Bar
+function tick() {
+var now = new Date();
+var h = now.getHours(), m = now.getMinutes();
+document.getElementById("clock").textContent =
+(h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+}
+tick(); setInterval(tick, 10000);
+// Reifen-Controls dynamisch erzeugen
+var tireLabels = ["FL", "FR", "RL", "RR"];
+var tireDefP = [2.24, 2.24, 2.22, 2.22];
+var tireDefT = [9, 10, 10, 9 ];
+var grid = document.getElementById("tireGrid");
+for (var i = 0; i < 4; i++) {
+(function(idx) {
+var html =
+'<div class="ctrl-group">' +
+'<div style="color:#7eb8f7;font-weight:bold;margin-bottom:4px;">' + tireLabels[idx] + '</div>' +
+'<label>Druck: <span class="val" id="p'+idx+'Val">'+tireDefP[idx]+'</span> bar</label>' +
+'<input type="range" id="p'+idx+'" min="0" max="4" step="0.01" value="'+tireDefP[idx]+'">' +
+'<label>Temp: <span class="val" id="t'+idx+'Val">'+tireDefT[idx]+'</span> °C</label>' +
+'<input type="range" id="t'+idx+'" min="-20" max="80" step="1" value="'+tireDefT[idx]+'">' +
+'<label><input type="checkbox" id="lost'+idx+'"> Signal lost</label>' +
+'</div>';
+grid.insertAdjacentHTML("beforeend", html);
+})(i);
+}
+// Hilfsfunktion: aktuellen Zustand aus Slidern lesen + an Server senden
+function pushState() {
+var tires = [];
+for (var i = 0; i < 4; i++) {
+tires.push({
+p: parseFloat(document.getElementById("p"+i).value),
+t: parseFloat(document.getElementById("t"+i).value),
+lost: document.getElementById("lost"+i).checked
+});
+}
+var payload = {
+tires: tires,
+oil: { t: parseFloat(document.getElementById("oilT").value),
+p: parseFloat(document.getElementById("oilP").value) },
+env: { outside: parseInt(document.getElementById("outT").value, 10),
+coolant: parseInt(document.getElementById("coolT").value, 10) }
+};
+$.ajax({ url: "/sim-state", method: "POST",
+contentType: "application/json",
+data: JSON.stringify(payload) });
+}
+// Anzeige-Update + Push on slider change
+function bindSlider(id, displayId, decimals) {
+var el = document.getElementById(id);
+var dsp = document.getElementById(displayId);
+el.addEventListener("input", function() {
+dsp.textContent = parseFloat(el.value).toFixed(decimals);
+pushState();
+});
+}
+for (var i = 0; i < 4; i++) {
+bindSlider("p"+i, "p"+i+"Val", 2);
+bindSlider("t"+i, "t"+i+"Val", 0);
+document.getElementById("lost"+i).addEventListener("change", pushState);
+}
+bindSlider("oilT", "oilTVal", 1);
+bindSlider("oilP", "oilPVal", 2);
+bindSlider("outT", "outVal", 0);
+bindSlider("coolT", "coolVal", 0);
+// App initialisieren – TpmsTmplt-Konstruktor ruft updateTpmsApp() nach 1s selbst auf.
+var containerDiv = document.getElementById("TpmsTmplt_0");
+new TpmsTmplt(null, containerDiv, "TpmsTmplt_0", {});
+});
+</script>
+<!-- ── Multicontroller keyboard/wheel bindings ────────────── -->
+<script src="simulator-controls.js"></script>
+</body>
+</html>
