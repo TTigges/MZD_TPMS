@@ -91,9 +91,22 @@
 
 #ifdef OIL_SUPPORT
 
- /* Analog input pins (A/D converter) */
- #define OIL_T_PIN       A2
- #define OIL_P_PIN       A0
+ /*
+  * Board variant — select exactly ONE:
+  *   OIL_BOARD_DEV:  Torben's car (T=A0, P=A2, formula: RV*VA_VB/(1-VA_VB))
+  *   OIL_BOARD_PROD: Partner layout (T=A2, P=A0, formula: RV*(1-VA_VB)/VA_VB)
+  */
+ #define OIL_BOARD_DEV
+ //#define OIL_BOARD_PROD
+
+ #ifdef OIL_BOARD_DEV
+  #define OIL_T_PIN  A0
+  #define OIL_P_PIN  A2
+ #endif
+ #ifdef OIL_BOARD_PROD
+  #define OIL_T_PIN  A2
+  #define OIL_P_PIN  A0
+ #endif
 
 #endif
 

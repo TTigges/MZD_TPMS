@@ -121,7 +121,12 @@ float OilSensor::calcTemp(float tPinValue)
   float RV = 1000;
   float VA_VB = tPinValue/OIL_MAXANALOGREAD;
   float B = (T0 * T1) / (T1-T0) * log(R0/R1);
-  float RN = RV*(1-VA_VB)/VA_VB; /* CHANGED FOR SWITCHED DIRECTION, ALT.: RV*VA_VB / (1-VA_VB); */
+  #ifdef OIL_BOARD_DEV
+  float RN = RV*VA_VB/(1-VA_VB);
+  #endif
+  #ifdef OIL_BOARD_PROD
+  float RN = RV*(1-VA_VB)/VA_VB;
+  #endif
 
   return T0 * B / (B + T0 * log(RN/R0)) -OIL_ABSZERO;
 }
