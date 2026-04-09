@@ -171,6 +171,26 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '        <span id="targetPressureLabel">Solldruck</span>' +
     '      </div>' +
     '    </div>' +
+
+    '    <div id="configBtn" class="sideItem menuItem sideItemTwo sideItemRight">' +
+    '      <div class="sideItemTop">' +
+    '        <span id="configBtnLabel">Konfiguration</span>' +
+    '      </div>' +
+    '      <div class="sideItemBottom"><span>&nbsp;</span></div>' +
+    '    </div>' +
+    '    <div id="setupBtn" class="sideItem menuItem sideItemThree sideItemRight">' +
+    '      <div class="sideItemTop">' +
+    '        <span id="setupBtnLabel">Setup</span>' +
+    '      </div>' +
+    '      <div class="sideItemBottom"><span>&nbsp;</span></div>' +
+    '    </div>' +
+    '    <div id="closeMenuBtn" class="sideItem menuItem sideItemFour sideItemRight">' +
+    '      <div class="sideItemTop">' +
+    '        <span id="closeMenuBtnLabel">Close</span>' +
+    '      </div>' +
+    '      <div class="sideItemBottom"><span>&nbsp;</span></div>' +
+    '    </div>' +
+
     '    <div id="debug">' +
     '    </div>' + 
     //   Close Side Items

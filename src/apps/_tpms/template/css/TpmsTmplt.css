@@ -217,6 +217,17 @@
     line-height: 22px;
     font-family: 'Titillium', Arial, sans-serif;
 }
+#TpmsContainer #InfoLayer .sideItem.selectable.selected .sideItemBottom {
+    border-color: rgba(255,0,0,.75);
+}
+/* ************
+ * Menu Layer */
+#TpmsContainer #InfoLayer .sideItem.menuItem {
+    right: -145px;
+}
+#TpmsContainer #InfoLayer .sideItem.menuItem.selectable {
+    right: 0;
+}
 /* *************
  * Setup Layer */
 #TpmsContainer #SetupLayer {

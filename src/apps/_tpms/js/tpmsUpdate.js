@@ -21,7 +21,7 @@ function updateTpmsApp() {
         AddClickDebug("cntrlBtnLeft");
     });
     $(".cntrlBtn5").click(function() {
-        OpenSetup();
+        OpenMenu();
         AddClickDebug("cntrlBtnSelecth");
     });
     $(".cntrlBtn6").click(function() {
@@ -44,8 +44,41 @@ function updateTpmsApp() {
     /*
      * Multicontroller Functions
      */
+    function OpenMenu() {
+        if (menuLayer === false) {
+            // add ".selectable" class to menu items #targetPressure #configBtn #setupBtn
+            $("#targetPressure").addClass("selectable");
+            $("#configBtn").addClass("selectable");
+            $("#setupBtn").addClass("selectable");
+            $("#closeMenuBtn").addClass("selectable");
+            
+            menuSelector = 0;
+        $("#"+menu[menuSelector]).toggleClass("selected");
+            menuLayer = true;
+        }
+    }
+    function CloseMenu() {
+        if (menuLayer) {
+            $(".selectable").removeClass("selected");
+            $("#targetPressure").removeClass("selectable");
+            $("#configBtn").removeClass("selectable");
+            $("#setupBtn").removeClass("selectable");
+            $("#closeMenuBtn").removeClass("selectable");
+            menuLayer = false;
+            setupLayer = false;
+            // menuSelector?
+            // setupItemSelected?
+            // availableIdsSelector?
+        }
+    }
+    function ToggleMenu(sel) {
+        console.log("ToggleMenu to " + menu[sel]);
+        $(".selectable").removeClass("selected");
+        $("#"+menu[sel]).toggleClass("selected");
+        menuSelector = sel;
+    }
     function OpenSetup() {
-        if (setupLayer === false) {
+        if (menuLayer && !setupLayer) {
             if (CheckSensorData()){
                 Initialize();
             } else {
@@ -60,20 +93,38 @@ function updateTpmsApp() {
             message = false;
             $("#MessageText").html("");
         }
-        else if (setupLayer === 1) {
-            $("#"+setupItems[setupItemSelected]).click();
-        }
-        else if (setupLayer === 2) {
-            IdSelected();
+        else if (menuLayer) {
+            if (menuSelector === 0 && !setupLayer) {
+                OpenSetup();
+            }
+            else if (menuSelector === 1) {
+                // Open Config
+            }
+            else if (menuSelector === 2) {
+                // Open Target Pressure
+            }
+            else if (menuSelector === 3) {
+                CloseMenu();
+            }
+            else if (menuSelector === 0 && setupLayer === 1) {
+                $("#"+setupItems[setupItemSelected]).click();
+            }
+            else if (menuSelector === 0 && setupLayer === 2) {
+                IdSelected();
+            }
         }
     }
     function ClickPrev() {
         if (!message) {
-            if (setupLayer === 1) {
+            if (menuLayer && !setupLayer) {
+                var sel = (menuSelector == 0) ? (menu.length-1) : menuSelector-1;
+                ToggleMenu(sel);
+            }
+            if (menuLayer && setupLayer === 1) {
                 var sel = (setupItemSelected == 0) ? (setupItems.length-1) : setupItemSelected-1;
                 ToggleSelected(sel);
             }
-            else if (setupLayer == 2) {
+            else if (menuLayer && setupLayer == 2) {
                 var sel = (availableIdsSelector == 0) ? (availableIds.length) : availableIdsSelector-1;
                 ToggleIdSelected(sel);
             }
@@ -81,11 +132,15 @@ function updateTpmsApp() {
     }
     function ClickNext() {
         if (!message) {
+            if (menuLayer && !setupLayer) {
+                var sel = (menuSelector == menu.length-1) ? 0 : menuSelector+1;
+                ToggleMenu(sel);
+            }
             if (setupLayer === 1) {
                 var sel = (setupItemSelected == setupItems.length-1) ? 0 : setupItemSelected+1;
                 ToggleSelected(sel);
             }
-            else if (setupLayer === 2) {
+            else if (menuLayer && setupLayer === 2) {
                 var sel = (availableIdsSelector == availableIds.length) ? 0 : availableIdsSelector+1;
                 ToggleIdSelected(sel);
             }
@@ -153,7 +208,7 @@ function updateTpmsApp() {
         ToggleSelected(7);
     });
     $("#CloseSetup").click(function() {
-        setupLayer = false;
+        setupLayer = 1;
         //$("#SetupLayer").toggle();
         $("#TpmsContainer").toggleClass("SetupActive");
         $("#"+setupItems[8]).toggleClass("active");

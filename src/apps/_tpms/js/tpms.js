@@ -11,7 +11,10 @@ var debugContainer = false;
 var debugLine = 1;
 var debugIds  = 0;
 //
-var setupLayer = false; // false = no setup / 1 = setup / 2 = tire ID selection / 3 = configuration
+var menuLayer = false; // false = no menu / true = menu
+var menu = ["setupBtn", "configBtn", "targetPressure", "closeMenuBtn"];
+var menuSelector;
+var setupLayer = false; // false = no setup menu / 1 = setup open / 2 = assign IDs
 var setupItems = ["SetupIDBox1", "SetupIDBox2", "SetupIDBox3", "SetupIDBox4",
                   "SetupIDClear", "SetupIDReset", "SetupIDSwitch", "SetupIDSave",
                   "CloseSetup"];
@@ -204,20 +207,37 @@ $(document).ready(function() {
         if ($.isNumeric(oilTemp) && oilTemp !== "0") {
             if (tempIsF) {
                 oilTemp = oilTemp * 1.8 + 32;
-                oilTemp = parseFloat(oilTemp.toFixed(1));
             }
-            /*oilTemp += "&deg;";*/
         } else {
             oilTemp = "-";
 		}
-        $('#oilTemperatureValue').html(oilTemp);
+        // Exponentional Moving Average for smoother display
+        if (oilTemp !== "-" && oilTemp !== 0) {
+            if (!updateOilTemp.prev) {
+                updateOilTemp.prev = oilTemp;
+            } else {
+                oilTemp = 0.25 * oilTemp + 0.75 * updateOilTemp.prev;
+                updateOilTemp.prev = oilTemp;
+            }
+        }
+
+        $('#oilTemperatureValue').html(parseFloat(oilTemp.toFixed(0)).toString().replace(".",","));
     }
     // --------------------------------------------------------------------------
     // Update Oil Pressure
     // --------------------------------------------------------------------------
     function updateOilPres(value) {
 		value = parseFloat(value).toFixed(2);
-		$('#oilPressureValue').html(value.toString().replace(".",","));
+        // Exponentional Moving Average for smoother display
+        if (value !== "-" && value !== 0) {
+            if (!updateOilPres.prev) {
+                updateOilPres.prev = value;
+            } else {
+                value = 0.4 * value + 0.6 * updateOilPres.prev;
+                updateOilPres.prev = value;
+            }
+        }
+		$('#oilPressureValue').html(parseFloat(value).toFixed(1).toString().replace(".",","));
     }
 
     // WebSocket for vehicle data (envData via speedometer.sh / websocketd :9969)
