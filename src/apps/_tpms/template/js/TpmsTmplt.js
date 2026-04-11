@@ -186,7 +186,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '    </div>' +
     '    <div id="closeMenuBtn" class="sideItem menuItem sideItemFour sideItemRight">' +
     '      <div class="sideItemTop">' +
-    '        <span id="closeMenuBtnLabel">Close</span>' +
+    '        <span id="closeMenuBtnLabel">Schließen</span>' +
     '      </div>' +
     '      <div class="sideItemBottom"><span>&nbsp;</span></div>' +
     '    </div>' +
