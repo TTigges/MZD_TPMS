@@ -23,10 +23,10 @@ APPS_DIR = BASE_DIR.parent / "apps"
 # ── Shared simulator state ───────────────────────────────────────────────────
 state = {
     "tires": [
-            {"p": 2.24, "t": 9.0,  "id": "0f54771b", "lost": False},  # FL 0
-            {"p": 2.24, "t": 10.0, "id": "0f547711", "lost": False},  # FR 1
-            {"p": 2.22, "t": 10.0, "id": "0f5476ea", "lost": False},  # RL 2
-            {"p": 2.22, "t": 9.0,  "id": "0f5476e8", "lost": False},  # RR 3
+            {"p": 2.0, "t": 9.0,  "id": "0f54771b", "lost": False},  # FL 0
+            {"p": 2.0, "t": 10.0, "id": "0f547711", "lost": False},  # FR 1
+            {"p": 2.0, "t": 10.0, "id": "0f5476ea", "lost": False},  # RL 2
+            {"p": 2.0, "t": 9.0,  "id": "0f5476e8", "lost": False},  # RR 3
         ],
     "oil":   {"t": 85.2, "p": 3.45},
     "env":   {"outside": 20, "coolant": 90},
@@ -196,7 +196,7 @@ async def main():
     site = web.TCPSite(runner, "127.0.0.1", 9970)
     await site.start()
     log.info("HTTP server  listening on http://127.0.0.1:9970/")
-    log.info("Open in browser: http://127.0.0.1:9970/simulator.html")
+    log.info("Open in browser: http://127.0.0.1:9970/simulator-gauges.html")
 
     try:
         await asyncio.Future()   

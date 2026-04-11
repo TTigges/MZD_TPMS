@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Gauges Simulator</title>
+<!-- jQuery (muss vor allem anderen kommen) -->
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+<!-- App-CSS: Pfade über /apps/ URL -->
+<link rel="stylesheet" href="/apps/_gauges/template/css/gaugesTmplt.css">
+<link rel="stylesheet" href="override.css">
+<style>
+body {
+background: #222;
+margin: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: flex-start;
+padding-top: 20px;
+font-family: Arial, sans-serif;
+}
+/* ── CMU frame ────────────────────────────────── */
+#screen {
+width: 800px; height: 480px;
+position: relative; overflow: hidden;
+border: 2px solid #555; border-radius: 4px;
+flex-shrink: 0;
+}
+#statusBar {
+width: 800px; height: 30px;
+background: #111; position: relative; z-index: 10;
+}
+#statusBar .clock {
+color: #aaa; font-size: 12px;
+position: absolute; right: 10px; top: 7px;
+}
+/* ── Simulator controls ───────────────────────── */
+#simulatorControls {
+width: 800px;
+background: #1a1a2e;
+border: 1px solid #444;
+border-radius: 4px;
+margin-top: 16px;
+padding: 14px 16px;
+color: #ccc;
+font-size: 11px;
+}
+#simulatorControls h3 {
+color: #7eb8f7; font-size: 13px;
+margin: 0 0 10px 0; padding-bottom: 6px;
+border-bottom: 1px solid #334;
+}
+.two-col {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 8px 14px;
+margin-bottom: 12px;
+}
+.three-col {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 8px 14px;
+margin-bottom: 12px;
+}
+.ctrl-group label {
+display: block; margin-bottom: 2px; color: #aaa;
+}
+.ctrl-group input[type=range] { width: 100%; }
+.ctrl-group .val { color: #ffd700; font-weight: bold; }
+.section-label {
+color: #7eb8f7; font-size: 11px; font-weight: bold;
+margin: 10px 0 4px 0; text-transform: uppercase;
+letter-spacing: 0.05em;
+}
+</style>
+</head>
+<body>
+<!-- ── CMU Screen ─────────────────────────────────────────── -->
+<div id="screen">
+  <div id="statusBar">
+    <span class="clock" id="clock"></span>
+  </div>
+  <!-- GaugesTmplt schreibt seinen HTML-Code in dieses div -->
+  <div id="GaugesTmplt_0"></div>
+</div>
+<!-- ── Simulator Controls ─────────────────────────────────── -->
+<div id="simulatorControls">
+  <h3>Simulator Controls</h3>
+  <div class="section-label">Druck</div>
+  <div class="two-col">
+    <div class="ctrl-group">
+      <label>Öldruck: <span class="val" id="oilPVal">3.50</span> bar</label>
+      <input type="range" id="oilP" min="0" max="10" step="0.05" value="3.50">
+    </div>
+    <div class="ctrl-group">
+      <label>Turbo: <span class="val" id="boostVal">0.00</span> bar</label>
+      <input type="range" id="boost" min="-1" max="4" step="0.05" value="0.00">
+    </div>
+  </div>
+  <div class="section-label">Temperatur</div>
+  <div class="three-col">
+    <div class="ctrl-group">
+      <label>Öl-Temp: <span class="val" id="oilTVal">85</span> °C</label>
+      <input type="range" id="oilT" min="0" max="150" step="1" value="85">
+    </div>
+    <div class="ctrl-group">
+      <label>Kühlwasser: <span class="val" id="coolVal">90</span> °C</label>
+      <input type="range" id="coolT" min="30" max="130" step="1" value="90">
+    </div>
+    <div class="ctrl-group">
+      <label>Außen-Temp: <span class="val" id="outVal">20</span> °C</label>
+      <input type="range" id="outT" min="-20" max="60" step="1" value="20">
+    </div>
+    <div class="ctrl-group">
+      <label>Einlass-Temp (heiß): <span class="val" id="intakeTHotVal">30</span> °C</label>
+      <input type="range" id="intakeTHot" min="0" max="50" step="1" value="30">
+    </div>
+    <div class="ctrl-group">
+      <label>Einlass-Temp (kalt): <span class="val" id="intakeTColdVal">15</span> °C</label>
+      <input type="range" id="intakeTCold" min="0" max="50" step="1" value="15">
+    </div>
+  </div>
+</div>
+<!-- ── JCI Shims ───────────────────────────────────────────── -->
+<script>
+var log = {
+    addSrcFile: function() {},
+    debug: function() {}
+};
+function baseApp() {}
+baseApp.init = function() {};
+var framework = {
+    common: { setSbDomainIcon: function() {} },
+    registerAppLoaded: function() {}
+};
+function utility() {}
+utility.loadScript = function(src) {
+    var remapped = src.replace("jci/gui/apps/", "/apps/");
+    var s = document.createElement("script");
+    s.src = remapped;
+    document.head.appendChild(s);
+};
+</script>
+<!-- ── App JS: Pfade über /apps/ URL ─────────────────────── -->
+<script src="/apps/_gauges/template/js/gaugesTmplt.js"></script>
+<script src="/apps/_gauges/js/gauges.js"></script>
+<script src="/apps/_gauges/js/_gaugesApp.js"></script>
+<!-- ── Simulator bootstrap ───────────────────────────────── -->
+<script>
+$(function() {
+    // Uhr im Status Bar
+    function tick() {
+        var now = new Date();
+        var h = now.getHours(), m = now.getMinutes();
+        document.getElementById("clock").textContent =
+            (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+    }
+    tick(); setInterval(tick, 10000);
+
+    // Aktuelle Werte aus Slidern lesen
+    function getValues() {
+        return {
+            oil:   { p: parseFloat(document.getElementById("oilP").value),
+                     t: parseFloat(document.getElementById("oilT").value) },
+            boost:   parseFloat(document.getElementById("boost").value),
+            env:   { coolant: parseInt(document.getElementById("coolT").value, 10),
+                     outside: parseInt(document.getElementById("outT").value, 10),
+                     intakeTHot:  parseInt(document.getElementById("intakeTHot").value, 10),
+                     intakeTCold:  parseInt(document.getElementById("intakeTCold").value, 10) }
+        };
+    }
+
+    // Gauge-Template initialisieren
+    var containerDiv = document.getElementById("GaugesTmplt_0");
+    var tmpl = new GaugesTmplt(null, containerDiv, "GaugesTmplt_0", {});
+    tmpl.initializeGauges();
+
+    // Zuordnung: data source → gauge-Index → Slider-Wert-Funktion
+    var dataMap = [
+        { src: "engine.oilpressure",   fn: function(v) { return v.oil.p;       } },
+        { src: "engine.boost",         fn: function(v) { return v.boost;        } },
+        { src: "temperature.oil",      fn: function(v) { return v.oil.t;        } },
+        { src: "temperature.coolant",  fn: function(v) { return v.env.coolant;  } },
+        { src: "temperature.outside",  fn: function(v) { return v.env.outside;  } },
+        { src: "temperature.intakeTHot",   fn: function(v) { return v.env.intakeTHot;   } },
+        { src: "temperature.intakeTCold",   fn: function(v) { return v.env.intakeTCold;   } }
+    ];
+
+    function pushToGauges() {
+        var v = getValues();
+        dataMap.forEach(function(entry, i) {
+            tmpl.updateIndicator(i, entry.fn(v));
+        });
+    }
+    pushToGauges();
+
+    // Slider-Change → Anzeige + Gauge-Update
+    function bindSlider(id, displayId, decimals) {
+        var el  = document.getElementById(id);
+        var dsp = document.getElementById(displayId);
+        el.addEventListener("input", function() {
+            dsp.textContent = parseFloat(el.value).toFixed(decimals);
+            pushToGauges();
+        });
+    }
+
+    bindSlider("oilP",    "oilPVal",   2);
+    bindSlider("boost",   "boostVal",  2);
+    bindSlider("oilT",    "oilTVal",   0);
+    bindSlider("coolT",   "coolVal",   0);
+    bindSlider("outT",    "outVal",    0);
+    bindSlider("intakeTHot", "intakeTHotVal", 0);
+    bindSlider("intakeTCold", "intakeTColdVal", 0);
+});
+</script>
+<!-- ── Multicontroller keyboard/wheel bindings ────────────── -->
+<script src="simulator-controls.js"></script>
+</body>
+</html>
