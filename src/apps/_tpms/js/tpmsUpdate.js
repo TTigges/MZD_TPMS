@@ -128,11 +128,11 @@ function updateTpmsApp() {
     function ClickPrev() {
         if (!message) {
             if (menuLayer && !setupLayer && !targetPressureLayer) {
-                var sel = (menuSelector == 0) ? (menu.length-1) : menuSelector-1;
+                var sel = (menuSelector == menu.length-1) ? 0 : menuSelector+1;
                 ToggleMenu(sel);
             }
             else if (menuLayer && !setupLayer && targetPressureLayer) {
-                targetPressureValue -= 0.1;
+                targetPressureValue += 0.1;
                 $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
             }
             else if (menuLayer && !targetPressureLayer && setupLayer === 1) {
@@ -148,11 +148,11 @@ function updateTpmsApp() {
     function ClickNext() {
         if (!message) {
             if (menuLayer && !setupLayer && !targetPressureLayer) {
-                var sel = (menuSelector == menu.length-1) ? 0 : menuSelector+1;
+                var sel = (menuSelector == 0) ? (menu.length-1) : menuSelector-1;
                 ToggleMenu(sel);
             }
             else if (menuLayer && !setupLayer && targetPressureLayer) {
-                targetPressureValue += 0.1;
+                targetPressureValue -= 0.1;
                 $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
             }
             if (menuLayer && !targetPressureLayer && setupLayer === 1) {
@@ -169,11 +169,11 @@ function updateTpmsApp() {
      * Direct Touch Actions Menu Layer
      */
     $("#targetPressure").click(function() {
-        if (!targetPressureLayer) {
+        if (menuLayer && !targetPressureLayer) {
             ToggleMenu(2);
             InitializeTargetPressureSetup();
         }
-        else if (targetPressureLayer) {
+        else if (menuLayer && targetPressureLayer) {
             CloseTargetPressureSetup();
         }
     });
