@@ -1,4 +1,10 @@
 function updateTpmsApp() {
+    // Initialize targetPressureValue display (pressureSettings is guaranteed loaded here)
+    if (typeof pressureSettings !== 'undefined') {
+        $('#targetPressureValue').text(
+            pressureSettings.normal.toFixed(2).replace('.', ',')
+        );
+    }
     /*
      * Multicontroller Actions
      */
@@ -66,13 +72,13 @@ function updateTpmsApp() {
             $("#closeMenuBtn").removeClass("selectable");
             menuLayer = false;
             setupLayer = false;
-            // menuSelector?
+            menuSelector = false;
             // setupItemSelected?
             // availableIdsSelector?
         }
     }
     function ToggleMenu(sel) {
-        console.log("ToggleMenu to " + menu[sel]);
+        AddDebug("ToggleMenu to " + menu[sel]);
         $(".selectable").removeClass("selected");
         $("#"+menu[sel]).toggleClass("selected");
         menuSelector = sel;
@@ -80,7 +86,7 @@ function updateTpmsApp() {
     function OpenSetup() {
         if (menuLayer && !setupLayer) {
             if (CheckSensorData()){
-                Initialize();
+                InitializeSetup();
             } else {
                 ShowMessage(0);
             }
@@ -94,14 +100,19 @@ function updateTpmsApp() {
             $("#MessageText").html("");
         }
         else if (menuLayer) {
+            AddDebug("Menu Selector: " + menuSelector);
+            AddDebug("Target Pressure Layer: " + targetPressureLayer);
             if (menuSelector === 0 && !setupLayer) {
                 OpenSetup();
             }
             else if (menuSelector === 1) {
                 // Open Config
             }
-            else if (menuSelector === 2) {
-                // Open Target Pressure
+            else if (menuSelector === 2 && !targetPressureLayer) {
+                InitializeTargetPressureSetup();
+            }
+            else if (menuSelector === 2 && targetPressureLayer) {
+                CloseTargetPressureSetup();
             }
             else if (menuSelector === 3) {
                 CloseMenu();
@@ -116,15 +127,19 @@ function updateTpmsApp() {
     }
     function ClickPrev() {
         if (!message) {
-            if (menuLayer && !setupLayer) {
+            if (menuLayer && !setupLayer && !targetPressureLayer) {
                 var sel = (menuSelector == 0) ? (menu.length-1) : menuSelector-1;
                 ToggleMenu(sel);
             }
-            if (menuLayer && setupLayer === 1) {
+            else if (menuLayer && !setupLayer && targetPressureLayer) {
+                targetPressureValue -= 0.1;
+                $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
+            }
+            else if (menuLayer && !targetPressureLayer && setupLayer === 1) {
                 var sel = (setupItemSelected == 0) ? (setupItems.length-1) : setupItemSelected-1;
                 ToggleSelected(sel);
             }
-            else if (menuLayer && setupLayer == 2) {
+            else if (menuLayer && !targetPressureLayer && setupLayer == 2) {
                 var sel = (availableIdsSelector == 0) ? (availableIds.length) : availableIdsSelector-1;
                 ToggleIdSelected(sel);
             }
@@ -132,20 +147,52 @@ function updateTpmsApp() {
     }
     function ClickNext() {
         if (!message) {
-            if (menuLayer && !setupLayer) {
+            if (menuLayer && !setupLayer && !targetPressureLayer) {
                 var sel = (menuSelector == menu.length-1) ? 0 : menuSelector+1;
                 ToggleMenu(sel);
             }
-            if (setupLayer === 1) {
+            else if (menuLayer && !setupLayer && targetPressureLayer) {
+                targetPressureValue += 0.1;
+                $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
+            }
+            if (menuLayer && !targetPressureLayer && setupLayer === 1) {
                 var sel = (setupItemSelected == setupItems.length-1) ? 0 : setupItemSelected+1;
                 ToggleSelected(sel);
             }
-            else if (menuLayer && setupLayer === 2) {
+            else if (menuLayer && !targetPressureLayer && setupLayer === 2) {
                 var sel = (availableIdsSelector == availableIds.length) ? 0 : availableIdsSelector+1;
                 ToggleIdSelected(sel);
             }
         }
     }
+    /*
+     * Direct Touch Actions Menu Layer
+     */
+    $("#targetPressure").click(function() {
+        if (!targetPressureLayer) {
+            ToggleMenu(2);
+            InitializeTargetPressureSetup();
+        }
+        else if (targetPressureLayer) {
+            CloseTargetPressureSetup();
+        }
+    });
+    $("#configBtn").click(function() {
+        ToggleMenu(1);
+        // Open Config
+    });
+    $("#setupBtn").click(function() {
+        if (!setupLayer) {
+            ToggleMenu(0);
+            OpenSetup();
+        }
+    });
+    $("#closeMenuBtn").click(function() {
+        if (!setupLayer && !targetPressureLayer) {
+            ToggleMenu(3);
+            CloseMenu();
+        }
+    });
     /*
      * Direct Touch Actions Setup Layer
      */
@@ -208,7 +255,7 @@ function updateTpmsApp() {
         ToggleSelected(7);
     });
     $("#CloseSetup").click(function() {
-        setupLayer = 1;
+        setupLayer = false;
         //$("#SetupLayer").toggle();
         $("#TpmsContainer").toggleClass("SetupActive");
         $("#"+setupItems[8]).toggleClass("active");
@@ -233,7 +280,7 @@ function updateTpmsApp() {
             return true;
         }
     }
-    function Initialize() {
+    function InitializeSetup() {
         AddDebug("Open Setup");
         ToggleSelected(0);
         tempSaved.fl = sensorData[0].id;
@@ -334,6 +381,30 @@ function updateTpmsApp() {
         $("#MessageContainer").toggle();
         $("#MessageText").html(warnings[n]);
     }
+    /*
+    * Target Pressure Setup
+    */
+    function InitializeTargetPressureSetup() {
+        targetPressureLayer = true;
+        // save string as float
+        targetPressureValue = parseFloat($("#targetPressureValue").html().replace(",","."));
+        $("#targetPressureValue").toggleClass("active");
+    }
+    function CloseTargetPressureSetup() {
+        AddDebug("closed Target Pressure Setup");
+        targetPressureLayer = false;
+        $("#targetPressureValue").toggleClass("active");
+        // save float as string with two decimal
+        $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
+        pressureSettings.normal = targetPressureValue;
+        try {
+            localStorage.setItem("pressureSettings", JSON.stringify(pressureSettings));
+        } catch(e) {
+            //console.error("Error saving pressureSettings to localStorage:", e);
+            AddDebug("Error saving pressureSettings to localStorage: " + e);
+        }
+    }
+
     /*
     * Debugging
     */

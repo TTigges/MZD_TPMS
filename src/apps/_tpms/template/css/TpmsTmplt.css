@@ -161,6 +161,7 @@
 /* ************
  * Side Items */
 #TpmsContainer #InfoLayer .sideItem {
+    opacity: 1;
     position: fixed;
     width: 125px;
     padding: 10px;
@@ -178,6 +179,7 @@
 }
 #TpmsContainer #InfoLayer .sideItemRight {
     right: 0;
+    margin-right: 0;
     text-align: left;
     padding-right: 0;
     border-right: none;
@@ -228,10 +230,13 @@
 #TpmsContainer #InfoLayer .sideItem.menuItem.selectable {
     right: 0;
 }
+#TpmsContainer #InfoLayer #targetPressureValue.active{
+    color: rgba(255,0,0,.75);
+}
 /* *************
  * Setup Layer */
 #TpmsContainer #SetupLayer {
-    display: block;
+    display: none;
 }
 #TpmsContainer #SetupLayer #SetupContainer {
     position: absolute;
@@ -434,8 +439,14 @@
 #TpmsContainer.SetupActive #InfoLayer {
     margin-left: -16%;
 }
-#TpmsContainer.SetupActive .sideItem {
-    top: -100px;
+#TpmsContainer.SetupActive #InfoLayer .sideItem {
+    opacity: 0;
+}
+#TpmsContainer.SetupActive #InfoLayer .sideItemRight {
+    margin-right: -32%;
+}
+#TpmsContainer.SetupActive #SetupLayer {
+    display: block;
 }
 #TpmsContainer.SetupActive #SetupLayer #SetupContainer #TireIdSetup {
     opacity: 1;

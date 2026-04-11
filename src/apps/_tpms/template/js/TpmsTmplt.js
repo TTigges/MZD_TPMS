@@ -164,7 +164,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     //   Target Pressure
     '    <div id="targetPressure" class="sideItem sideItemOne sideItemRight">' +
     '      <div class="sideItemTop">' +
-    '        <span id="targetPressureValue" class="sideItemValue">2,00</span>' +
+    '        <span id="targetPressureValue" class="sideItemValue"></span>' +
     '        <span id="targetPressureUnit" class="sideItemUnit">bar</span>' +
     '      </div>' +
     '      <div class="sideItemBottom">' +
@@ -232,7 +232,9 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '</div>' +
     '<script src="apps/_tpms/js/tpms.js" type="text/javascript"></script>';
     setTimeout(function() {
-        updateTpmsApp();
+        if (typeof updateTpmsApp === 'function') {
+            updateTpmsApp();
+        }
     }, 1000);
 }
 
@@ -252,7 +254,7 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
  */
 TpmsTmplt.prototype.singleClick = function(clickTarget) {
   if (utility.toType(clickTarget) === "string") { clickTarget = $(clickTarget) }
-  (speedometerLonghold) ? speedometerLonghold = false: (utility.toType(clickTarget) === "function") ? clickTarget() : clickTarget.click();
+  (typeof speedometerLonghold !== 'undefined' && speedometerLonghold) ? speedometerLonghold = false: (utility.toType(clickTarget) === "function") ? clickTarget() : clickTarget.click();
   clearTimeout(this.longholdTimeout);
   this.longholdTimeout = null;
 }
@@ -265,7 +267,7 @@ TpmsTmplt.prototype.singleClick = function(clickTarget) {
 TpmsTmplt.prototype.longClick = function(clickFunction) {
   if (utility.toType(clickFunction) === "string") { clickFunction = $(clickFunction) }
   this.longholdTimeout = setTimeout(function() {
-    speedometerLonghold = true;
+    if (typeof speedometerLonghold !== 'undefined') { speedometerLonghold = true; }
     (utility.toType(clickFunction) === "function") ? clickFunction(): clickFunction.click();
   }, 1200);
 }

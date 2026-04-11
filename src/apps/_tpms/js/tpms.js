@@ -10,10 +10,11 @@ var sensorData = [
 var debugContainer = false;
 var debugLine = 1;
 var debugIds  = 0;
-//
+// Menu
 var menuLayer = false; // false = no menu / true = menu
 var menu = ["setupBtn", "configBtn", "targetPressure", "closeMenuBtn"];
 var menuSelector;
+// Setup Tire IDs
 var setupLayer = false; // false = no setup menu / 1 = setup open / 2 = assign IDs
 var setupItems = ["SetupIDBox1", "SetupIDBox2", "SetupIDBox3", "SetupIDBox4",
                   "SetupIDClear", "SetupIDReset", "SetupIDSwitch", "SetupIDSave",
@@ -23,32 +24,50 @@ var availableIds = [];
 var availableIdsSelector;
 var tempSaved = {fl: "", fr: "", rl: "", rr: ""};
 var saveTireIDs = false;
-//
-var labelForId = "ID";
-var labelPres  = "bar";
-var labelTemp  = "°C";
-//
 var message  = false;
 var warnings = [
     "Es liegen nicht alle vier Sensor-IDs vor.",
     "Es wurden noch nicht alle vier Sensor-IDs zugeordnet.",
     "Die Einstellungen wurden gespeichert.<br>Es kann einen Moment dauern, bis die Änderungen wirksam werden."
 ];
-
-// TBD: get from json
+// Target Pressure
+var targetPressureLayer = false;
+var targetPressureValue;
+//
+var labelForId = "ID";
+var labelPres  = "bar";
+var labelTemp  = "°C";
+// Configuration
+var configLayer = false;
+var configItems = ["DisplayCar", "DisplayCarColor", "ConfigTempUnit", "ConfigPressUnit", "ConfigWarnDiff", "ConfigMultiplier", "ConfigRange", "SaveConfig", "ConfigReset", "CloseConfig"];
+var configItemSelected;
+var displayCarOptions = ["car1", "car2", "car3"];
+var displayCarColorOptions = ["white", "black", "red", "blue"];
+// get pressureSettings from localStorage or use defaults
 var pressureSettings = {
-	normal: 2.00,
+    normal: 2.00,
     treshold: 25,
-	warnDiff: 0.3,
-	multiplier: 1, // can be modified to have the color change earlier or later to yellow/orange/red
-	range: 0.5
+    warnDiff: 0.3,
+    multiplier: 1,
+    range: 0.5
 };
+try {
+    var storedSettings = localStorage.getItem("pressureSettings");
+    if (storedSettings) {
+        var parsed = JSON.parse(storedSettings);
+        if (parsed && typeof parsed.normal === 'number') { pressureSettings.normal = parsed.normal; }
+        if (parsed && typeof parsed.treshold === 'number') { pressureSettings.treshold = parsed.treshold; }
+        if (parsed && typeof parsed.warnDiff === 'number') { pressureSettings.warnDiff = parsed.warnDiff; }
+        if (parsed && typeof parsed.multiplier === 'number') { pressureSettings.multiplier = parsed.multiplier; }
+        if (parsed && typeof parsed.range === 'number') { pressureSettings.range = parsed.range; }
+    }
+} catch(e) {}
 var warnMin = pressureSettings.normal - pressureSettings.warnDiff;
 var warnMax = pressureSettings.normal + pressureSettings.warnDiff;
 
-// TBD: Config-file necessary?
-tempIsF = false;
-pressIsPsi = false;
+// TBD: Config-file necessary? localStorage seems sufficient for now, especially with pressureSettings object
+tempIsF = false; // false = °C, true = °F
+pressIsPsi = false; // false = bar, true = psi
 
 $(document).ready(function() {
     debugUpdate("Initialize TPMS");
