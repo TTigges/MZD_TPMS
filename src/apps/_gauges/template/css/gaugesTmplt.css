@@ -1,0 +1,310 @@
+/*
+* Gauges App v1.0.0
+* 2026 by Torben Tigges
+* Template Styles
+*/
+
+@font-face {
+    font-family: "Exo-Italic";
+    src: url("../fonts/Exo-Italic.ttf");
+}
+
+@font-face {
+    font-family: "Exo-SemiBoldItalic";
+    src: url("../fonts/Exo-SemiBoldItalic.ttf");
+}
+
+.GaugesTmplt {
+    background: url("../images/speedometer_background.jpg") no-repeat center center;
+}
+
+.GaugesTmplt #GaugesContainer {
+    position: relative;
+    width: 800px;
+    height: 480px;
+    overflow: hidden;
+}
+
+/* =========================
+   GAUGES
+   ========================= */
+
+.GaugesTmplt .instrument {
+    position: absolute;
+    display: inline-block;
+    width: 202px;
+    height: 202px;
+    overflow: hidden;
+    background: url("../images/gaugeback.png") no-repeat center center;
+    background-size: cover;
+    border-radius: 50%;
+}
+
+.GaugesTmplt #gauge1 {
+    top: 15px;
+    left: 192px;
+}
+
+.GaugesTmplt #gauge2 {
+    top: 15px;
+    left: 406px;
+    background: url("../images/gaugeback_boost.png") no-repeat center center;
+    background-size: cover;
+}
+
+.GaugesTmplt #gauge3 {
+    top: 200px;
+    left: 85px;
+}
+
+.GaugesTmplt #gauge4 {
+    top: 200px;
+    left: 299px;
+}
+
+.GaugesTmplt #gauge5 {
+    top: 200px;
+    left: 513px;
+}
+
+.GaugesTmplt .instrument:after {
+    content: "";
+    position: absolute;
+    display: block;
+    width: 30px;
+    height: 30px;
+    top: 86px;
+    left: 86px;
+    border-radius: 50%;
+    background: url("../images/center.png") no-repeat center center;
+    box-shadow: 0 0 10px 0 rgba(255, 255, 255, .3);
+    z-index: 110;
+}
+
+/* =========================
+   HELPERS
+   ========================= */
+
+.GaugesTmplt .framer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #fff;
+    width: 100%;
+    z-index: 99;
+    overflow: hidden;
+}
+
+.GaugesTmplt .framer.onehundredeighty {
+    height: 90px;
+}
+
+.GaugesTmplt .framer.twohundredfourty {
+    height: 129px;
+}
+
+.GaugesTmplt .framer.twohundredseventy {
+    height: 175px;
+}
+
+.GaugesTmplt .halfer {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 101px;
+    height: 100%;
+    border-right: 1px solid rgba(0,0,0,.4);
+    z-index: 99;
+}
+
+/* =========================
+   INDICATORS
+   ========================= */
+
+.GaugesTmplt .indicator {
+    position: absolute;
+    top: 30px;
+    left: 86px;
+    width: 30px;
+    height: 142px;
+    transform: rotate(-120deg);
+    transform-origin: 50% 50%;
+    z-index: 103;
+}
+
+.GaugesTmplt .indicator-primary {
+    background: url("../images/needle_2.png") no-repeat center center;
+    background-size: cover;
+    opacity: 1;
+}
+
+.GaugesTmplt .indicator-secondary {
+    background: url("../images/needle_2w.png") no-repeat center center;
+    background-size: cover;
+    opacity: .8;
+    z-index: 102;
+}
+.GaugesTmplt .indicator-tertiary {
+    background: url("../images/needle_2b.png") no-repeat center center;
+    background-size: cover;
+    opacity: .8;
+    z-index: 102;
+}
+.GaugesTmplt .indicator-out {
+    top: 0 !important;
+    height: 200px !important;
+    background: url("../images/needle_out2.png") no-repeat center center;
+    background-size: cover;
+    opacity: .8;
+    z-index: 102;
+}
+
+.GaugesTmplt .indicator-value {
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    text-align: center;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    z-index: 104;
+    pointer-events: none;
+}
+
+.GaugesTmplt .indicator-value-primary {
+    top: 124px;
+    height: 32px;
+    font-size: 26px;
+    line-height: 28px;
+}
+
+.GaugesTmplt .indicator-value-secondary {
+    top: 92px;
+    height: 24px;
+    font-size: 18px;
+    line-height: 20px;
+    opacity: .9;
+}
+
+/* =========================
+   SCALE / DIAL
+   ========================= */
+
+.GaugesTmplt .gaugedialtext {
+    position: absolute;
+    left: 25px;
+    bottom: 47px;
+    width: 152px;
+    height: 130px;
+    z-index: 101;
+}
+
+.GaugesTmplt .gaugedialtext .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.GaugesTmplt .gaugedialtext .container .speedotext {
+    font-family: Exo-SemiBoldItalic;
+    font-size: 13px;
+    line-height: 16px;
+    height: 16px;
+    width: 30px;
+    color: rgba(255,255,255,1);
+    position: absolute;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    z-index: 101;
+}
+
+.GaugesTmplt .gaugedialtext .container .majortick {
+    height: 10px;
+    width: 2px;
+    background: rgba(255,255,255,1);
+    border: 1px solid black;
+    color: rgba(0,0,0,0);
+    z-index: 101;
+    position: absolute;
+    text-align: center;
+    font-size: 0;
+}
+
+.GaugesTmplt .gaugedialtext .container .minortick {
+    height: 5px;
+    width: 1px;
+    background: rgba(255,255,255,1);
+    border: 1px solid black;
+    color: rgba(0,0,0,0);
+    z-index: 101;
+    position: absolute;
+    text-align: center;
+    font-size: 0;
+}
+
+/* =========================
+   LABELS
+   ========================= */
+
+.GaugesTmplt .label {
+    text-align: center;
+    position: relative;
+    z-index: 104;
+}
+
+.GaugesTmplt .label.unit {
+    font-family: Exo-Italic;
+    font-size: 10px;
+    line-height: 14px;
+    margin-top: 145px;
+}
+
+.GaugesTmplt .label.name {
+    font-family: Exo-SemiBoldItalic;
+    font-size: 13px;
+    line-height: 14px;
+    margin-top: 5px;
+}
+
+.GaugesTmplt .label.name.secondary {
+    margin-top: 2px;
+    font-size: 11px;
+    opacity: .8;
+}
+
+.GaugesTmplt .label.red {
+    color: #ff0000;
+}
+
+/* =========================
+   OLD SPECIAL CASES
+   ========================= */
+
+.GaugesTmplt #gauge2 .gaugedialtext .container .speedotext:nth-child(1) {
+    display: none;
+}
+
+.GaugesTmplt #gauge2 .gaugedialtext .container .speedotext:nth-child(6) {
+    display: none;
+}
+
+.GaugesTmplt #gauge2 .gaugedialtext .container .minortick.minortick80 {
+    opacity: 0;
+}
+
+.GaugesTmplt #gauge2 .gaugedialtext .container .majortick.majortick9 {
+    opacity: 0;
+}
+
+.GaugesTmplt #gauge2 .gaugedialtext .container .minortick.minortick90 {
+    opacity: 0;
+}
+
+.GaugesTmplt #gauge2 .gaugedialtext .container .majortick.majortick10 {
+    opacity: 0;
+}
+
+.GaugesTmplt #gauge4 .gaugedialtext .container .speedotext:nth-child(6) {
+    left: 103px !important;
+}
