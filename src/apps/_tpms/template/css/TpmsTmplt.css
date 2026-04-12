@@ -230,13 +230,38 @@
 #TpmsContainer #InfoLayer .sideItem.menuItem.selectable {
     right: 0;
 }
+#TpmsContainer #InfoLayer #configBtn {
+    right: -135px;
+    top: 165px;
+    transition: right 0.55s ease, margin-right 1s ease, opacity 1s ease;
+}
+#TpmsContainer #InfoLayer #configBtn.selectable {
+    right: 0;
+}
+#TpmsContainer #InfoLayer #setupBtn {
+    right: -165px;
+    top: 221px;
+    transition: right 0.75s ease, margin-right 1s ease, opacity 1s ease;
+}
+#TpmsContainer #InfoLayer #setupBtn.selectable {
+    right: 0;
+}
+#TpmsContainer #InfoLayer #closeMenuBtn {
+    right: -215px;
+    top: 277px;
+    transition: right 0.95s ease, margin-right 1s ease, opacity 1s ease;
+}
+#TpmsContainer #InfoLayer #closeMenuBtn.selectable {
+    right: 0;
+}
 #TpmsContainer #InfoLayer #targetPressureValue.active{
     color: rgba(255,0,0,.75);
 }
 /* *************
  * Setup Layer */
 #TpmsContainer #SetupLayer {
-    display: none;
+    visibility: hidden;
+    pointer-events: none;
 }
 #TpmsContainer #SetupLayer #SetupContainer {
     position: absolute;
@@ -250,10 +275,10 @@
 /* ************
  * Tire Setup */
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup {
-    width: 90%;
+    width: 92%;
     position: absolute;
     top: 20px;
-    right: -5%;
+    right: -10%;
     bottom: 10px;
     text-align: center;
     opacity: 0;
@@ -262,7 +287,7 @@
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer {
     position: absolute;
     width: 65%;
-    height: 100%;
+    height: 97.5%;
 }
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer .SetupIDBox {
     position: absolute;
@@ -279,11 +304,11 @@
 }
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox1 {
     left: 20px;
-    top: 15px;
+    top: 0px;
 }
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox2 {
     right: 20px;
-    top: 15px;
+    top: 0px;
 }
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup #idContainer #SetupIDBox3 {
     left: 20px;
@@ -333,18 +358,21 @@
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup .buttonContainer {
     position: absolute;
     right: 0;
-    width: 30%;
+    width: 20%;
+    margin-right: -22%;
+    transition: margin 1s;
 }
 #TpmsContainer #SetupLayer #SetupContainer #TireIdSetup button {
     position: relative;
     display: block;
     background: none;
     outline: none;
-    padding: 10px;
-    width: 95%;
-    margin: 15px auto 35px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,.5);
+    padding: 10px 0 2px;
+    width: 100%;
+    margin: 0 0 25px;
+    text-align: left;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,.75);
     transition: border-color .25s ease;
     color: #fff;
     font-size: 18px;
@@ -437,7 +465,7 @@
 /* *********
  * Actions */
 #TpmsContainer.SetupActive #InfoLayer {
-    margin-left: -16%;
+    margin-left: -12%;
 }
 #TpmsContainer.SetupActive #InfoLayer .sideItem {
     opacity: 0;
@@ -446,11 +474,15 @@
     margin-right: -32%;
 }
 #TpmsContainer.SetupActive #SetupLayer {
-    display: block;
+    visibility: visible;
+    pointer-events: auto;
 }
 #TpmsContainer.SetupActive #SetupLayer #SetupContainer #TireIdSetup {
     opacity: 1;
-    right: 5%;
+    right: 0%;
+}
+#TpmsContainer.SetupActive #SetupLayer #SetupContainer #TireIdSetup .buttonContainer {
+    margin-right: 0;
 }
 #TpmsContainer.SetupActive #InfoLayer .tireContainer {
   opacity: .5;
