@@ -171,7 +171,6 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '        <span id="targetPressureLabel">Solldruck</span>' +
     '      </div>' +
     '    </div>' +
-
     '    <div id="configBtn" class="sideItem menuItem sideItemTwo sideItemRight">' +
     '      <div class="sideItemTop">' +
     '        <span id="configBtnLabel">Konfiguration</span>' +
@@ -190,7 +189,6 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '      </div>' +
     '      <div class="sideItemBottom"><span>&nbsp;</span></div>' +
     '    </div>' +
-
     '    <div id="debug">' +
     '    </div>' + 
     //   Close Side Items
@@ -220,6 +218,110 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '      </ul>' +
     '    </div>' +
     // Close Setup Layer
+    '  </div>' +
+    // Config Layer
+    '  <div id="ConfigLayer">' +
+    '    <div id="ConfigContainer">' +
+
+    '      <div id="ConfigUnitsBox">' +
+    '        <div id="ConfigUnitsTitle">Einheiten:</div>' +
+    '        <div id="ConfigTempUnit" class="configItem selectable">' +
+    '          <span class="configItemLabel">Temperaturen in </span>' +
+    '          <span class="configItemValue" id="ConfigTempUnitValue">°C</span>' +
+    '        </div>' +
+    '        <div id="ConfigPressUnit" class="configItem selectable">' +
+    '          <span class="configItemLabel">Druck in </span>' +
+    '          <span class="configItemValue" id="ConfigPressUnitValue">bar</span>' +
+    '        </div>' +
+    '        <div id="ConfigDecUnit" class="configItem selectable">' +
+    '          <span class="configItemLabel">Dezimalzeichen:</span>' +
+    '          <span class="configItemValue" id="ConfigDecUnitValue">,</span>' +
+    '        </div>' +
+    '      </div>' +
+
+    '      <div id="ConfigStatusBox">' +
+    '        <div id="ConfigStatusTitle">Status-Anzeige:</div>' +
+    '        <div id="ConfigColorScale" class="configItem selectable">' +
+    '          <span class="configItemLabel">Farbintensität: </span>' +
+    '          <span class="configItemValue" id="ConfigColorScaleValue">6</span>' +
+    '        </div>' +
+    '        <div id="ConfigBarScale" class="configItem selectable">' +
+    '          <span class="configItemLabel">Bereichsgröße:</span>' +
+    '          <span class="configItemValue" id="ConfigBarScaleValue">6</span>' +
+    '        </div>' +
+    '        <div id="ConfigWarnDiff" class="configItem selectable">' +
+    '          <span class="configItemLabel">Warnung bei +/-: </span>' +
+    '          <span class="configItemValue" id="ConfigWarnDiffValue">20</span>' +
+    '          <span class="configItemUnit">%</span>' +
+    '        </div>' +
+    '      </div>' +
+    
+    '      <div id="ConfigStatusPreview" class="selectable">' +
+    '        <div id="ConfigStatusPreviewTitle">' +
+    '          <span>Vorschau:</span><br>' +
+    '        </div>' +
+
+    '        <div class="preview80 previewItem">' +
+    '          <div class="previewLabel"><span id="previewLabel80">1.6</span></div>' +
+    '          <div class="barGraph">' +
+    '            <div id="previewBar80" class="bar"></div>' +
+    '            <div id="ConfigStatusPreviewScaleNorm" class="scale scalenorm"></div>' +
+    '            <div class="scale scalewarn scalelow"></div>' +
+    '            <div class="scale scalewarn scalehigh"></div>' +
+    '          </div>' +
+    '          <div class="previewLabelPerc"><span id="previewLabelPerc80">80%</span></div>' +
+    '        </div>' +
+    '        <div class="preview90 previewItem">' +
+    '          <div class="previewLabel"><span id="previewLabel90">1.8</span></div>' +
+    '          <div class="barGraph">' +
+    '            <div id="previewBar90" class="bar"></div>' +
+    '            <div id="ConfigStatusPreviewScaleNorm" class="scale scalenorm"></div>' +
+    '            <div class="scale scalewarn scalelow"></div>' +
+    '            <div class="scale scalewarn scalehigh"></div>' +
+    '          </div>' +
+    '          <div class="previewLabelPerc"><span id="previewLabelPerc90">90%</span></div>' +
+    '        </div>' +
+    '        <div class="preview100 previewItem">' +
+    '          <div class="previewLabel"><span id="previewLabel100">2.0</span></div>' +
+    '          <div class="barGraph">' +
+    '            <div id="previewBar100" class="bar"></div>' +
+    '            <div id="ConfigStatusPreviewScaleNorm" class="scale scalenorm"></div>' +
+    '            <div class="scale scalewarn scalelow"></div>' +
+    '            <div class="scale scalewarn scalehigh"></div>' +
+    '          </div>' +
+    '          <div class="previewLabelPerc"><span id="previewLabelPerc100">100%</span></div>' +
+    '        </div>' +
+    '        <div class="preview110 previewItem">' +
+    '          <div class="previewLabel"><span id="previewLabel110">2.2</span></div>' +
+    '          <div class="barGraph">' +
+    '            <div id="previewBar110" class="bar"></div>' +
+    '            <div id="ConfigStatusPreviewScaleNorm" class="scale scalenorm"></div>' +
+    '            <div class="scale scalewarn scalelow"></div>' +
+    '            <div class="scale scalewarn scalehigh"></div>' +
+    '          </div>' +
+    '          <div class="previewLabelPerc"><span id="previewLabelPerc110">110%</span></div>' +
+    '        </div>' +
+    '        <div class="preview120 previewItem">' +
+    '          <div class="previewLabel"><span id="previewLabel120">2.4</span></div>' +
+    '          <div class="barGraph">' +
+    '            <div id="previewBar120" class="bar"></div>' +
+    '            <div id="ConfigStatusPreviewScaleNorm" class="scale scalenorm"></div>' +
+    '            <div class="scale scalewarn scalelow"></div>' +
+    '            <div class="scale scalewarn scalehigh"></div>' +
+    '          </div>' +
+    '          <div class="previewLabelPerc"><span id="previewLabelPerc120">120%</span></div>' +
+    '        </div>' +
+    
+    '        <div id="ConfigStatusPreviewSubtitle" class="configStatusPreviewSubTitle selectable">' +
+    '          <span>Bereich um Sollwert: </span>' +
+    '          <span class="configStatusPreviewSubTitle configItemValue" id="configStatusPreviewValue">20</span>' +
+    '          <span class="configStatusPreviewSubTitle">%</span>' +
+    '        </div>' +
+
+    '      </div>' +
+
+    '      <button id="CloseConfig" class="selectable">Schließen</button>' +
+    '    </div>' +
     '  </div>' +
     // Open Debug Layer
     '  <div id="DebugLayer">' +

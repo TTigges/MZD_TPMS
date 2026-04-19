@@ -13,9 +13,11 @@ function updateTpmsApp() {
         AddClickDebug("cntrlBtnSelect");
     });
     $(".cntrlBtn1").click(function() {
+        if (configLayer && configItemEditing) { AdjustConfigItem(1); }
         AddClickDebug("cntrlBtnUp");
     });
     $(".cntrlBtn2").click(function() {
+        if (configLayer && configItemEditing) { AdjustConfigItem(-1); }
         AddClickDebug("cntrlBtnDown");
     });
     $(".cntrlBtn3").click(function() {
@@ -72,6 +74,10 @@ function updateTpmsApp() {
             $("#closeMenuBtn").removeClass("selectable");
             menuLayer = false;
             setupLayer = false;
+            if (configLayer) {
+                $("#TpmsContainer").removeClass("ConfigActive");
+            }
+            configLayer = false;
             menuSelector = false;
             // setupItemSelected?
             // availableIdsSelector?
@@ -105,8 +111,19 @@ function updateTpmsApp() {
             if (menuSelector === 0 && !setupLayer) {
                 OpenSetup();
             }
-            else if (menuSelector === 1) {
-                // Open Config
+            else if (menuSelector === 1 && !configLayer) {
+                OpenConfig();
+            }
+            else if (menuSelector === 1 && configLayer) {
+                if (configItemEditing) {
+                    DeactivateConfigItem();
+                } else if (configItemSelected === configItems.length - 1) {
+                    CloseConfig();
+                } else if (configItemSelected >= 3) {
+                    ActivateConfigItem();
+                } else {
+                    ToggleConfigItem(configItemSelected, 1);
+                }
             }
             else if (menuSelector === 2 && !targetPressureLayer) {
                 InitializeTargetPressureSetup();
@@ -127,13 +144,20 @@ function updateTpmsApp() {
     }
     function ClickPrev() {
         if (!message) {
-            if (menuLayer && !setupLayer && !targetPressureLayer) {
+            if (menuLayer && !setupLayer && !targetPressureLayer && !configLayer) {
                 var sel = (menuSelector == menu.length-1) ? 0 : menuSelector+1;
                 ToggleMenu(sel);
             }
-            else if (menuLayer && !setupLayer && targetPressureLayer) {
+            else if (menuLayer && !setupLayer && targetPressureLayer && !configLayer) {
                 targetPressureValue += 0.1;
                 $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
+            }
+            else if (menuLayer && configLayer && configItemEditing) {
+                AdjustConfigItem(-1);
+            }
+            else if (menuLayer && configLayer && !configItemEditing) {
+                var sel = (configItemSelected === 0) ? (configItems.length-1) : configItemSelected-1;
+                ToggleConfigSelected(sel);
             }
             else if (menuLayer && !targetPressureLayer && setupLayer === 1) {
                 var sel = (setupItemSelected == 0) ? (setupItems.length-1) : setupItemSelected-1;
@@ -147,13 +171,20 @@ function updateTpmsApp() {
     }
     function ClickNext() {
         if (!message) {
-            if (menuLayer && !setupLayer && !targetPressureLayer) {
+            if (menuLayer && !setupLayer && !targetPressureLayer && !configLayer) {
                 var sel = (menuSelector == 0) ? (menu.length-1) : menuSelector-1;
                 ToggleMenu(sel);
             }
-            else if (menuLayer && !setupLayer && targetPressureLayer) {
+            else if (menuLayer && !setupLayer && targetPressureLayer && !configLayer) {
                 targetPressureValue -= 0.1;
                 $("#targetPressureValue").html((targetPressureValue.toFixed(2).toString().replace(".",",")));
+            }
+            else if (menuLayer && configLayer && configItemEditing) {
+                AdjustConfigItem(1);
+            }
+            else if (menuLayer && configLayer && !configItemEditing) {
+                var sel = (configItemSelected === configItems.length-1) ? 0 : configItemSelected+1;
+                ToggleConfigSelected(sel);
             }
             if (menuLayer && !targetPressureLayer && setupLayer === 1) {
                 var sel = (setupItemSelected == setupItems.length-1) ? 0 : setupItemSelected+1;
@@ -178,8 +209,10 @@ function updateTpmsApp() {
         }
     });
     $("#configBtn").click(function() {
-        ToggleMenu(1);
-        // Open Config
+        if (!configLayer) {
+            ToggleMenu(1);
+            OpenConfig();
+        }
     });
     $("#setupBtn").click(function() {
         if (!setupLayer) {
@@ -259,6 +292,40 @@ function updateTpmsApp() {
         //$("#SetupLayer").toggle();
         $("#TpmsContainer").toggleClass("SetupActive");
         $("#"+setupItems[8]).toggleClass("active");
+    });
+    /*
+     * Direct Touch Actions Config Layer
+     */
+    $("#ConfigTempUnit").click(function() {
+        ToggleConfigSelected(0);
+        ToggleConfigItem(0, 1);
+    });
+    $("#ConfigPressUnit").click(function() {
+        ToggleConfigSelected(1);
+        ToggleConfigItem(1, 1);
+    });
+    $("#ConfigDecUnit").click(function() {
+        ToggleConfigSelected(2);
+        ToggleConfigItem(2, 1);
+    });
+    $("#ConfigColorScale").click(function() {
+        if (configItemSelected === 3 && configItemEditing) { DeactivateConfigItem(); }
+        else { ToggleConfigSelected(3); ActivateConfigItem(); }
+    });
+    $("#ConfigWarnDiff").click(function() {
+        if (configItemSelected === 4 && configItemEditing) { DeactivateConfigItem(); }
+        else { ToggleConfigSelected(4); ActivateConfigItem(); }
+    });
+    $("#ConfigBarScale").click(function() {
+        if (configItemSelected === 5 && configItemEditing) { DeactivateConfigItem(); }
+        else { ToggleConfigSelected(5); ActivateConfigItem(); }
+    });
+    $("#ConfigStatusPreview").click(function() {
+        if (configItemSelected === 6 && configItemEditing) { DeactivateConfigItem(); }
+        else { ToggleConfigSelected(6); ActivateConfigItem(); }
+    });
+    $("#CloseConfig").click(function() {
+        CloseConfig();
     });
     /*
      * Direct Touch Actions ID Modal Layer
@@ -380,6 +447,113 @@ function updateTpmsApp() {
         message = true;
         $("#MessageContainer").toggle();
         $("#MessageText").html(warnings[n]);
+    }
+    /*
+    * Config Setup
+    */
+    function updatePreviewBars() {
+        var D = pressureSettings.previewRange / 100;
+        var percs    = [1-D, 1-D/2, 1.0, 1+D/2, 1+D];
+        var barIds   = ["previewBar80", "previewBar90", "previewBar100", "previewBar110", "previewBar120"];
+        var labelIds = ["previewLabel80", "previewLabel90", "previewLabel100", "previewLabel110", "previewLabel120"];
+        var labelPercs = ["previewLabelPerc80", "previewLabelPerc90", "previewLabelPerc100", "previewLabelPerc110", "previewLabelPerc120"];
+        for (var i = 0; i < percs.length; i++) {
+            var val    = pressureSettings.normal * percs[i];
+            var color  = perc2color(val);
+            var height = pixelPosition(val);
+            $("#" + barIds[i]).css({'background': color, 'height': height + 'px'});
+            $("#" + labelIds[i]).text(val.toFixed(2).replace(".", ","));
+            $("#" + labelPercs[i]).text((percs[i] * 100).toFixed(0) + "%");
+        }
+    }
+    function AdjustConfigItem(dir) {
+        if (configLayer) {
+            ToggleConfigItem(configItemSelected, dir);
+        }
+    }
+    function OpenConfig() {
+        AddDebug("Open Config");
+        configItemSelected = 0;
+        InitConfigValues();
+        $(".selectable").removeClass("selected");
+        $("#"+configItems[configItemSelected]).addClass("selected");
+        $("#TpmsContainer").toggleClass("ConfigActive");
+        configLayer = true;
+    }
+    function CloseConfig() {
+        AddDebug("Close Config");
+        configLayer = false;
+        configItemEditing = false;
+        warnMin = pressureSettings.normal * (1 - pressureSettings.warnThreshold / 100);
+        warnMax = pressureSettings.normal * (1 + pressureSettings.warnThreshold / 100);
+        $(".selectable").removeClass("selected");
+        $("#"+menu[menuSelector]).addClass("selected");
+        $("#TpmsContainer").toggleClass("ConfigActive");
+        try {
+            localStorage.setItem("tpmsConfig", JSON.stringify({
+                tempIsF: tempIsF,
+                pressIsPsi: pressIsPsi,
+                decIsComma: decIsComma
+            }));
+            localStorage.setItem("pressureSettings", JSON.stringify(pressureSettings));
+        } catch(e) {
+            AddDebug("Error saving config: " + e);
+        }
+    }
+    function InitConfigValues() {
+        $("#ConfigTempUnitValue").text(tempIsF ? "°F" : "°C");
+        $("#ConfigPressUnitValue").text(pressIsPsi ? "psi" : "bar");
+        $("#ConfigDecUnitValue").text(decIsComma ? "," : ".");
+        $("#ConfigColorScaleValue").text(pressureSettings.colorScale);
+        $("#ConfigWarnDiffValue").text(pressureSettings.warnThreshold);
+        $("#ConfigBarScaleValue").text(pressureSettings.barScale);
+        $("#configStatusPreviewValue").text(pressureSettings.previewRange);
+        updatePreviewBars();
+    }
+    function ToggleConfigSelected(sel) {
+        if (configItemEditing) {
+            configItemEditing = false;
+            $("#"+configItems[configItemSelected]+" .configItemValue").removeClass("active");
+        }
+        $(".selectable").removeClass("selected");
+        configItemSelected = sel;
+        $("#"+configItems[configItemSelected]).addClass("selected");
+    }
+    function ActivateConfigItem() {
+        configItemEditing = true;
+        $("#"+configItems[configItemSelected]+" .configItemValue").addClass("active");
+    }
+    function DeactivateConfigItem() {
+        configItemEditing = false;
+        $("#"+configItems[configItemSelected]+" .configItemValue").removeClass("active");
+    }
+    function ToggleConfigItem(sel, dir) {
+        dir = dir || 1;
+        if (configItems[sel] === "ConfigTempUnit") {
+            tempIsF = !tempIsF;
+            $("#ConfigTempUnitValue").text(tempIsF ? "°F" : "°C");
+        } else if (configItems[sel] === "ConfigPressUnit") {
+            pressIsPsi = !pressIsPsi;
+            $("#ConfigPressUnitValue").text(pressIsPsi ? "psi" : "bar");
+        } else if (configItems[sel] === "ConfigDecUnit") {
+            decIsComma = !decIsComma;
+            $("#ConfigDecUnitValue").text(decIsComma ? "," : ".");
+        } else if (configItems[sel] === "ConfigColorScale") {
+            pressureSettings.colorScale = Math.min(10, Math.max(1, pressureSettings.colorScale + dir * 1));
+            $("#ConfigColorScaleValue").text(pressureSettings.colorScale);
+            updatePreviewBars();
+        } else if (configItems[sel] === "ConfigWarnDiff") {
+            pressureSettings.warnThreshold = Math.min(100, Math.max(1, pressureSettings.warnThreshold + dir));
+            $("#ConfigWarnDiffValue").text(pressureSettings.warnThreshold);
+        } else if (configItems[sel] === "ConfigBarScale") {
+            pressureSettings.barScale = Math.min(10,Math.max(1, pressureSettings.barScale + dir));
+            $("#ConfigBarScaleValue").text(pressureSettings.barScale);
+            updatePreviewBars();
+        } else if (configItems[sel] === "ConfigStatusPreview") {
+            pressureSettings.previewRange = Math.min(33, Math.max(2, pressureSettings.previewRange + dir));
+            $("#configStatusPreviewValue").text(pressureSettings.previewRange);
+            updatePreviewBars();
+        }
     }
     /*
     * Target Pressure Setup

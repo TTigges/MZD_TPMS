@@ -39,35 +39,47 @@ var labelPres  = "bar";
 var labelTemp  = "°C";
 // Configuration
 var configLayer = false;
-var configItems = ["DisplayCar", "DisplayCarColor", "ConfigTempUnit", "ConfigPressUnit", "ConfigWarnDiff", "ConfigMultiplier", "ConfigRange", "SaveConfig", "ConfigReset", "CloseConfig"];
+var configItems = ["ConfigTempUnit", "ConfigPressUnit", "ConfigDecUnit", "ConfigColorScale", "ConfigBarScale", "ConfigWarnDiff", "ConfigStatusPreview", "CloseConfig"];
 var configItemSelected;
+var configItemEditing = false;
 var displayCarOptions = ["car1", "car2", "car3"];
 var displayCarColorOptions = ["white", "black", "red", "blue"];
 // get pressureSettings from localStorage or use defaults
 var pressureSettings = {
     normal: 2.00,
-    treshold: 25,
-    warnDiff: 0.3,
-    multiplier: 1,
-    range: 0.5
+    colorScale: 6,
+    barScale: 6,
+    warnThreshold: 20,
+    previewRange: 20
 };
 try {
     var storedSettings = localStorage.getItem("pressureSettings");
     if (storedSettings) {
         var parsed = JSON.parse(storedSettings);
         if (parsed && typeof parsed.normal === 'number') { pressureSettings.normal = parsed.normal; }
-        if (parsed && typeof parsed.treshold === 'number') { pressureSettings.treshold = parsed.treshold; }
-        if (parsed && typeof parsed.warnDiff === 'number') { pressureSettings.warnDiff = parsed.warnDiff; }
-        if (parsed && typeof parsed.multiplier === 'number') { pressureSettings.multiplier = parsed.multiplier; }
-        if (parsed && typeof parsed.range === 'number') { pressureSettings.range = parsed.range; }
+        if (parsed && typeof parsed.colorScale === 'number') { pressureSettings.colorScale = parsed.colorScale; }
+        if (parsed && typeof parsed.warnThreshold === 'number') { pressureSettings.warnThreshold = parsed.warnThreshold; }
+        else if (parsed && typeof parsed.warnDiff === 'number') { pressureSettings.warnThreshold = Math.round(parsed.warnDiff * 100); }
+        if (parsed && typeof parsed.barScale === 'number') { pressureSettings.barScale = parsed.barScale; }
+        if (parsed && typeof parsed.previewRange === 'number') { pressureSettings.previewRange = parsed.previewRange; }
     }
 } catch(e) {}
-var warnMin = pressureSettings.normal - pressureSettings.warnDiff;
-var warnMax = pressureSettings.normal + pressureSettings.warnDiff;
+var warnMin = pressureSettings.normal * (1 - pressureSettings.warnThreshold / 100);
+var warnMax = pressureSettings.normal * (1 + pressureSettings.warnThreshold / 100);
 
 // TBD: Config-file necessary? localStorage seems sufficient for now, especially with pressureSettings object
-tempIsF = false; // false = °C, true = °F
-pressIsPsi = false; // false = bar, true = psi
+var tempIsF = false; // false = °C, true = °F
+var pressIsPsi = false; // false = bar, true = psi
+var decIsComma = true; // false = decimal point, true = decimal comma
+try {
+    var storedConfig = localStorage.getItem("tpmsConfig");
+    if (storedConfig) {
+        var parsedConfig = JSON.parse(storedConfig);
+        if (parsedConfig && typeof parsedConfig.tempIsF === 'boolean') { tempIsF = parsedConfig.tempIsF; }
+        if (parsedConfig && typeof parsedConfig.pressIsPsi === 'boolean') { pressIsPsi = parsedConfig.pressIsPsi; }
+        if (parsedConfig && typeof parsedConfig.decIsComma === 'boolean') { decIsComma = parsedConfig.decIsComma; }
+    }
+} catch(e) {}
 
 $(document).ready(function() {
     debugUpdate("Initialize TPMS");
@@ -288,16 +300,20 @@ $(document).ready(function() {
 });
 
 function pixelPosition(value) {
-	var maxHeight = 57; // tire / bar height in px // TBD: Depending on car image <= CSS
-	return maxHeight - maxHeight * ( 0.5 - (( value - pressureSettings.normal ) / ( pressureSettings.range * 2 )));
+  var maxHeight = 57;
+  const scale = 2.0 - (pressureSettings.barScale - 1) * (1.9 / 9);
+  return maxHeight - maxHeight * (
+    0.5 - ((value - pressureSettings.normal) / (scale * 2))
+  );
 }
 
 function perc2color(value) {
     // calculate difference of sensor value to normal pressure
     var diff = Math.abs(pressureSettings.normal - value); // Calculate absolute difference
-    // diff = diff * pressureSettings.multiplier; // Apply multiplier
     diff = (diff / pressureSettings.normal) * 100;
-    diff = Math.min(diff * (100 / pressureSettings.treshold), 100); // Apply a multiplier depending on treshold
+    const scale = 40 - (pressureSettings.colorScale - 1) * (25 / 7);
+    diff = Math.min(diff * (100 / scale), 100);
+    //diff = Math.min(diff * (100 / pressureSettings.colorScale), 100); // Apply a multiplier depending on colorScale
     // color calculation green to yellow to red
     var n, e;
     if (diff < 50) {
