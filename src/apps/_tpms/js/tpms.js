@@ -66,7 +66,6 @@ try {
 } catch(e) {}
 var warnMin = pressureSettings.normal * (1 - pressureSettings.warnThreshold / 100);
 var warnMax = pressureSettings.normal * (1 + pressureSettings.warnThreshold / 100);
-
 // TBD: Config-file necessary? localStorage seems sufficient for now, especially with pressureSettings object
 var tempIsF = false; // false = °C, true = °F
 var pressIsPsi = false; // false = bar, true = psi
@@ -80,7 +79,23 @@ try {
         if (parsedConfig && typeof parsedConfig.decIsComma === 'boolean') { decIsComma = parsedConfig.decIsComma; }
     }
 } catch(e) {}
+// Car options
+var carLayer = false;
+var carSelected = {"car": "Abarth124Spider", "color": "white", "hood": "heritage", "top": false, "mirror": "red", "tirePositions": {"fl": [81, 461], "fr": [81, 462], "rl": [303, 461], "rr": [303, 462]}};
+var carOptions = {
+    "Abarth124Spider": { "name": "Abarth 124 Spider", "color": ["white", "black", "red", "blue"], "hood": ["bodycolor", "heritage"], "top": [false, true, "carbon"], "mirror": ["bodycolor", "red", "black"], "tirePositions": {"fl": [81, 461], "fr": [81, 462], "rl": [303, 461], "rr": [303, 462]} },
+    "Abarth124GT": { "name": "Abarth 124 GT", "color": ["white", "black", "red", "blue"], "hood": ["bodycolor", "heritage"], "top": [false, true, "carbon"], "mirror": ["bodycolor", "red", "black"], "tirePositions": {"fl": [81, 461], "fr": [81, 462], "rl": [303, 461], "rr": [303, 462]} },
+    "Fiat124Spider": { "name": "Fiat 124 Spider", "color": ["white", "black", "red", "blue"], "hood": ["bodycolor"], "top": [false, true, "carbon"], "mirror": ["bodycolor", "red", "black"], "tirePositions": {"fl": [81, 461], "fr": [81, 462], "rl": [303, 461], "rr": [303, 462]} },
+    "MX5ND": { "name": "Mazda MX-5 ND", "color": ["white", "black", "red", "blue"], "hood": ["bodycolor"], "top": [false, true, "carbon"], "mirror": ["bodycolor", "red", "black"], "tirePositions": {"fl": [81, 461], "fr": [81, 462], "rl": [303, 461], "rr": [303, 462]} },
+    "MX5NDRF": { "name": "Mazda MX-5 ND RF", "color": ["white", "black", "red", "blue"], "hood": ["bodycolor"], "top": [false, true, "carbon"], "mirror": ["bodycolor", "red", "black"], "tirePositions": {"fl": [81, 461], "fr": [81, 462], "rl": [303, 461], "rr": [303, 462]} }
+};
+// TBD:
+// 1. Get SVGs for car models with options
+// 2. Implement car selection in config menu
+// 3. Setup tire positions based on car
+// 4. Adjust tire positions opposed to TpmsTmplt.css according to car selection
 
+// Initialization
 $(document).ready(function() {
     debugUpdate("Initialize TPMS");
     // SSE connection to usbget2 daemon
@@ -299,31 +314,56 @@ $(document).ready(function() {
     }, 3000);
 });
 
+function mapScale(value, minOut, maxOut, exponent = 2.0) {
+    const t = (value - 1) / 9; // normiert auf 0..1
+
+    // S-Kurve: gleichmäßige Wahrnehmung
+    const curved = t / (t + Math.pow(1 - t, exponent));
+
+    return maxOut - curved * (maxOut - minOut);
+}
+
 function pixelPosition(value) {
-  var maxHeight = 57;
-  const scale = 2.0 - (pressureSettings.barScale - 1) * (1.9 / 9);
-  return maxHeight - maxHeight * (
-    0.5 - ((value - pressureSettings.normal) / (scale * 2))
-  );
+    var maxHeight = 57;
+
+    const scale = mapScale(pressureSettings.barScale, 0.2, 1.5, 2.5);
+
+    return maxHeight - maxHeight * (
+        0.5 - ((value - pressureSettings.normal) / (scale * 2))
+    );
 }
 
 function perc2color(value) {
-    // calculate difference of sensor value to normal pressure
-    var diff = Math.abs(pressureSettings.normal - value); // Calculate absolute difference
+    var diff = Math.abs(pressureSettings.normal - value);
     diff = (diff / pressureSettings.normal) * 100;
-    const scale = 40 - (pressureSettings.colorScale - 1) * (25 / 7);
+
+    const scale = mapScale(pressureSettings.colorScale, 5, 40, 2.0);
     diff = Math.min(diff * (100 / scale), 100);
-    //diff = Math.min(diff * (100 / pressureSettings.colorScale), 100); // Apply a multiplier depending on colorScale
-    // color calculation green to yellow to red
-    var n, e;
-    if (diff < 50) {
-        e = 255;
-        n = Math.round(5.1 * diff);
+
+    let r, g;
+
+    if (diff < 40) {
+        // früher Gelb: schnellerer Anstieg von Rot
+        const t = diff / 40;
+        r = Math.round(255 * Math.pow(t, 0.8)); // schneller Start
+        g = 255;
     } else {
-        n = 255;
-        e = Math.round(255 - 5.1 * (diff - 50)); // Adjust calculation for green component
+        // längeres Orange + weicher Übergang zu Rot
+        const t = (diff - 40) / 60;
+
+        r = 255;
+
+        // langsamer Abfall von Grün → mehr Orange
+        g = Math.round(255 * (1 - Math.pow(t, 1.3)));
+
+        // optional: Rot abdunkeln am Ende
+        if (diff > 80) {
+            const darken = (diff - 80) / 20; // 0..1
+            r = Math.round(255 * (1 - 0.3 * darken)); // bis ~180
+        }
     }
-    return "#" + ("000000" + (65536 * n + 256 * e + 0).toString(16)).slice(-6);
+
+    return "#" + ("000000" + (65536 * r + 256 * g).toString(16)).slice(-6);
 }
 
 function debugUpdate(msg) {

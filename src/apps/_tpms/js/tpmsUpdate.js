@@ -312,11 +312,11 @@ function updateTpmsApp() {
         if (configItemSelected === 3 && configItemEditing) { DeactivateConfigItem(); }
         else { ToggleConfigSelected(3); ActivateConfigItem(); }
     });
-    $("#ConfigWarnDiff").click(function() {
+    $("#ConfigBarScale").click(function() {
         if (configItemSelected === 4 && configItemEditing) { DeactivateConfigItem(); }
         else { ToggleConfigSelected(4); ActivateConfigItem(); }
     });
-    $("#ConfigBarScale").click(function() {
+    $("#ConfigWarnDiff").click(function() {
         if (configItemSelected === 5 && configItemEditing) { DeactivateConfigItem(); }
         else { ToggleConfigSelected(5); ActivateConfigItem(); }
     });

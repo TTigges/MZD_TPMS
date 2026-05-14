@@ -480,6 +480,7 @@
     z-index: 99;
 }
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigUnitsBox,
+#TpmsContainer #ConfigLayer #ConfigContainer #ConfigCarBox,
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigStatusBox,
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigStatusPreview {
     position: absolute;
@@ -491,22 +492,28 @@
     color: #fff;
 }
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigUnitsBox {
-    top: 40px;
-    left: 20px;
+    top: 50px;
+    left: 30px;
     width: 250px;
+    height: 150px;
+}
+#TpmsContainer #ConfigLayer #ConfigContainer #ConfigCarBox {
+    top: 50px;
+    left: 300px;
+    width: 300px;
     height: 150px;
 }
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigStatusBox {
     top: 215px;
-    left: 20px;
+    left: 30px;
     width: 250px;
-    height: 180px;
+    height: 190px;
 }
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigStatusPreview {
     top: 215px;
-    left: 290px;
+    left: 300px;
     width: 300px;
-    height: 180px;
+    height: 190px;
 }
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigUnitsBox #ConfigUnitsTitle,
 #TpmsContainer #ConfigLayer #ConfigContainer #ConfigStatusBox #ConfigStatusTitle,

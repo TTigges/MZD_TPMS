@@ -239,6 +239,14 @@ function TpmsTmplt(uiaId, parentDiv, templateID, controlProperties) {
     '        </div>' +
     '      </div>' +
 
+    '      <div id="ConfigCarBox">' +
+    '        <div id="ConfigCarTitle">Fahrzeug:</div>' +
+    '        <div id="ConfigCarSelect" class="configItem selectable">' +
+    '          <span class="configItemLabel">Modellauswahl:</span>' +
+    '          <span class="configItemValue" id="ConfigCarSelectValue">-</span>' +
+    '        </div>' +
+    '      </div>' +
+
     '      <div id="ConfigStatusBox">' +
     '        <div id="ConfigStatusTitle">Status-Anzeige:</div>' +
     '        <div id="ConfigColorScale" class="configItem selectable">' +
