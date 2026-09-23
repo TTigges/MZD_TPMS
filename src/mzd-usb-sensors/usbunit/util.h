@@ -55,31 +55,38 @@ typedef struct statistics_t {
 
 static volatile statistics_t statistics;
 
-/* Note: dump happens unlatched. 
- * Wrong data may be printed (sometimes).
+/* Note: an atomic snapshot is taken before printing to avoid torn reads
+ * of multi-byte fields on AVR (e.g. unsigned int / unsigned long).
  */
 void dump_statistics()
 {
+  statistics_t snap;
+  /* Disable interrupts for the copy so no ISR can modify statistics mid-read */
+  uint8_t sreg = SREG;
+  cli();
+  snap = statistics;
+  SREG = sreg;
+
   Serial.print(F("+cs intr.    = "));
-  Serial.println(statistics.cs_interrupts);
+  Serial.println(snap.cs_interrupts);
   Serial.print(F("+data intr.  = "));
-  Serial.println(statistics.data_interrupts);
+  Serial.println(snap.data_interrupts);
   Serial.print(F("+max carr us = "));
-  Serial.println(statistics.carrier_len);  
+  Serial.println(snap.carrier_len);  
   Serial.print(F("+carr detect = "));
-  Serial.println(statistics.carrier_detected);
+  Serial.println(snap.carrier_detected);
   Serial.print(F("+data avail. = "));
-  Serial.println(statistics.data_available);
+  Serial.println(snap.data_available);
   Serial.print(F("+max timings = "));
-  Serial.println(statistics.max_timings);
+  Serial.println(snap.max_timings);
   Serial.print(F("+bit errors  = "));
-  Serial.println(statistics.bit_errors);
+  Serial.println(snap.bit_errors);
   Serial.print(F("+preamble ok = "));
-  Serial.println(statistics.preamble_found);
+  Serial.println(snap.preamble_found);
   Serial.print(F("+cksum ok    = "));
-  Serial.println(statistics.checksum_ok);
+  Serial.println(snap.checksum_ok);
   Serial.print(F("+cksum fails = "));
-  Serial.println(statistics.checksum_fails);
+  Serial.println(snap.checksum_fails);
 }
 
 void clear_statistics()

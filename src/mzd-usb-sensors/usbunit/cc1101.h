@@ -85,7 +85,7 @@
 #define CC1101_MDMCFG2           0x12        // Modem Configuration
 #define CC1101_MDMCFG1           0x13        // Modem Configuration
 #define CC1101_MDMCFG0           0x14        // Modem Configuration
-#define CC1101_DEVIATN           0x45        // Modem Deviation Setting //jayrock: was 0x15
+#define CC1101_DEVIATN           0x15        // Modem Deviation Setting
 #define CC1101_MCSM2             0x16        // Main Radio Control State Machine Configuration
 #define CC1101_MCSM1             0x17        // Main Radio Control State Machine Configuration
 #define CC1101_MCSM0             0x18        // Main Radio Control State Machine Configuration
@@ -151,10 +151,10 @@
 #define CC1101_DEFVAL_FREQ2_868  0x21        // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_868  0x65        // Frequency Control Word, Middle Byte
 #define CC1101_DEFVAL_FREQ0_868  0xCC        // Frequency Control Word, Low Byte
-// Carrier frequency = 433.8798 MHz
+// Carrier frequency = 433.915 MHz (measured sensor center: ~433.915 MHz)
 #define CC1101_DEFVAL_FREQ2_433  0x10        // Frequency Control Word, High Byte
 #define CC1101_DEFVAL_FREQ1_433  0xB0        // Frequency Control Word, Middle Byte
-#define CC1101_DEFVAL_FREQ0_433  0x0C        // Frequency Control Word, Low Byte
+#define CC1101_DEFVAL_FREQ0_433  0x65        // Frequency Control Word, Low Byte
 
 #define CC1101_DEFVAL_MDMCFG4    0x59        // Modem Configuration (59 = data rate = 20kHz - actual data rate is 10kHz but due to bi-phase coding need to double the rate, RX bandwidth 325kHz)
 #define CC1101_DEFVAL_MDMCFG3    0x93        // Modem Configuration (now 93 = data rate = 20kHz)
@@ -162,18 +162,17 @@
 
 #define CC1101_DEFVAL_MDMCFG1    0x22        // Modem Configuration Channel spacing 200kHz
 #define CC1101_DEFVAL_MDMCFG0    0xF8        // Modem Configuration
-#define CC1101_DEFVAL_DEVIATN    0x41        // Modem Deviation Setting (+/-28.56kHz)
+#define CC1101_DEFVAL_DEVIATN    0x46        // Modem Deviation Setting (+/-44.5kHz, measured FR=41kHz, RR=38kHz, FL/RL=35kHz)
 #define CC1101_DEFVAL_MCSM2      0x07        // Main Radio Control State Machine Configuration
 // #define CC1101_DEFVAL_MCSM1      0x30        // Main Radio Control State Machine Configuration
 #define CC1101_DEFVAL_MCSM1      0x3C        // Main Radio Control State Machine Configuration
 #define CC1101_DEFVAL_MCSM0      0x18        // Main Radio Control State Machine Configuration
-#define CC1101_DEFVAL_FOCCFG     0x16        // Frequency Offset Compensation Configuration
-#define CC1101_DEFVAL_BSCFG      0x6C        // Bit Synchronization Configuration
-// #define CC1101_DEFVAL_AGCCTRL2   0x43        // AGC Control
-#define CC1101_DEFVAL_AGCCTRL2   0xC6        // AGC Control
+#define CC1101_DEFVAL_FOCCFG     0x36        // Frequency Offset Compensation Configuration (CS gate enabled, max 4K gain)
+#define CC1101_DEFVAL_BSCFG      0x1C        // Bit Synchronization Configuration (reduced clock recovery gain)
+#define CC1101_DEFVAL_AGCCTRL2   0x43        // AGC Control (allows more DVGA gain for weak signals)
 // #define CC1101_DEFVAL_AGCCTRL1   0x40        // AGC Control
 #define CC1101_DEFVAL_AGCCTRL1   0x50        // AGC Control
-#define CC1101_DEFVAL_AGCCTRL0   0x80        // AGC Control
+#define CC1101_DEFVAL_AGCCTRL0   0x91        // AGC Control (16-sample averaging, reduces burst instability)
 
 #define CC1101_DEFVAL_WOREVT1    0x87        // High Byte Event0 Timeout
 #define CC1101_DEFVAL_WOREVT0    0x6B        // Low Byte Event0 Timeout

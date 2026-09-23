@@ -5,6 +5,34 @@
  * 
  */
 
+ /*
+ * Summary of changes required to switch from 433 MHz (EU) to 315 MHz (US):
+ *
+ * 1. [REQUIRED] Update the three frequency control word defines in cc1101.h:
+ *
+ *      #define CC1101_DEFVAL_FREQ2_315  0x0C  // Frequency Control Word, High Byte   (315.000 MHz)
+ *      #define CC1101_DEFVAL_FREQ1_315  0x1D  // Frequency Control Word, Middle Byte
+ *      #define CC1101_DEFVAL_FREQ0_315  0x89  // Frequency Control Word, Low Byte
+ *
+ *    And update the three corresponding writeReg() calls in configureRegisters()
+ *    in cc1101.ino to use the new defines.
+ *
+ * 2. [RECOMMENDED] Replace hardcoded FSCAL values with a self-calibration strobe,
+ *    as the FSCAL registers are frequency-dependent and the current values were
+ *    generated for 433 MHz. Add the following after writing the frequency registers
+ *    in configureRegisters():
+ *
+ *      cmdStrobe(CC1101_SCAL);  // Trigger self-calibration for new frequency
+ *      delay(1);                // Wait for calibration to complete
+ *
+ * 3. [OPTIONAL] Re-verify FSCTRL1 (IF frequency) using TI SmartRF Studio for
+ *    315 MHz. Current value should still work but may not be optimal.
+ *
+ * 4. No other changes are required. The CC1101 natively supports 300-348 MHz,
+ *    so no hardware changes are needed. Data rate, modulation, deviation, AGC,
+ *    and all interrupt/state machine logic remain unchanged.
+ */
+
 #ifdef CC1101_SUPPORT
 
 SPIClass spi;
@@ -83,13 +111,14 @@ void edge_interrupt()
     case STATE_CARRIER_DETECTED:
     
       first_edge_state = digitalRead(CC1101_RXPin);
+      last_edge_time_usec = ts;  // anchor timestamp to first data edge, not carrier detect
       receiver_state = STATE_RECEIVING;
-      /* Fall throught */
+      break;
 
     case STATE_RECEIVING:
 
       if (timings_count >= CC1101_MAX_TIMINGS)
-      {//buffer full - don't accpet anymore
+      {//buffer full - don't accept anymore
         break;
       }
 
@@ -109,8 +138,12 @@ void edge_interrupt()
       }
   
       if (bit_len_usec > 255)
-      {
-        bit_len_usec = 255;
+      { /* Gap too long - not a valid bit timing, restart */
+        if( timings_count >= 16) {
+          statistics.bit_errors++;
+        }
+        init_receiver();
+        break;
       }
 
       timings[timings_count++] = (byte)bit_len_usec;
@@ -238,7 +271,7 @@ void CC1101::reset()
 
   configureRegisters();
 
-  delay(2000);
+  delay(100);
 
   setIdleState();
 
